@@ -15,7 +15,7 @@ if ($email === '' || $password === '') {
 $pdo = Database::getConnection();
 
 $sql = <<<SQL
-SELECT id, name, email, password_hash, role, active
+SELECT id, name, email, password_hash, role, active, escola_id
 FROM users
 WHERE email = :email
 LIMIT 1
@@ -34,6 +34,7 @@ if (!$user || !$user['active'] || !password_verify($password, $user['password_ha
 $_SESSION['user_id'] = (int)$user['id'];
 $_SESSION['role']    = $user['role'] ?? 'user';
 $_SESSION['name']    = $user['name'];
+$_SESSION['escola_id']   = $user['escola_id'];
 
 header('Location: /index.php?page=home');
 exit;
