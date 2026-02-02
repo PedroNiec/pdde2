@@ -1,7 +1,8 @@
 :root { --sidebar-w: 220px; }
 
 * { box-sizing: border-box; }
-body { margin: 0; font-family: Arial, sans-serif; }
+body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+
 
 .auth-wrap {
   min-height: 100vh;
@@ -90,3 +91,259 @@ body { margin: 0; font-family: Arial, sans-serif; }
   font-size: 14px;
   font-weight: 600;
 }
+
+/* Header da página */
+.page-header{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.page-title{
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.page-subtitle{
+  margin-top: 4px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* Tabela refinada */
+.table{
+  border-radius: 12px;
+}
+
+.table tbody tr:hover{
+  background: #f9fafb;
+}
+
+.col-num{
+  text-align: right;
+  width: 110px;
+  white-space: nowrap;
+}
+
+.col-date{
+  white-space: nowrap;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.col-actions{
+  width: 90px;
+  text-align: center;
+}
+
+.muted{ color: #94a3b8; }
+
+/* Badges de status (minimalistas) */
+.badge{
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #334155;
+}
+
+.badge--open{
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #334155;
+}
+
+.badge--buy{
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+.badge--done{
+  background: #ecfdf5;
+  border-color: #bbf7d0;
+  color: #047857;
+}
+
+.btn-secondary{
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #fff;
+  color: #111827;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid #e5e7eb;
+}
+
+.form{
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.form-row{
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.field{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label{
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.field input,
+.field select{
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+}
+
+.form-actions{
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.alert{
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.alert--error{
+  background: #fee2e2;
+  border-color: #fecaca;
+  color: #991b1b;
+}
+
+.card{
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.section-title{
+  margin: 14px 0 10px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.kv-grid{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.kv__label{
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.kv__value{
+  font-size: 14px;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.link{
+  color: #111827;
+  text-decoration: none;
+  font-weight: 700;
+}
+.link:hover{ text-decoration: underline; }
+
+@media (max-width: 900px){
+  .kv-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.btn-small{
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+}
+.btn-small:hover{
+  background: #f9fafb;
+}
+.action-bar{
+  display: flex;
+  justify-content: flex-end;
+  margin: 12px 0 16px;
+}
+.alert--success{
+  background: #d1fae5;
+  border-color: #a7f3d0;
+  color: #065f46;
+}
+/* ====== Tabela (refino) ====== */
+.table th.col-num,
+.table td.col-num { text-align: right; font-variant-numeric: tabular-nums; }
+
+.table td.col-date,
+.table th.col-date { white-space: nowrap; }
+
+.table tbody tr:nth-child(even) { background: #fcfcfd; }
+.table tbody tr:hover { background: #f6f7f9; }
+
+.table td { vertical-align: middle; }
+
+/* Valor como "pill" discreta (opcional) */
+.price {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+/* ====== Responsivo: tabela scroll no mobile ====== */
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+/* Se usar table-wrap, remove a borda duplicada da table */
+.table-wrap .table {
+  border: 0;
+  border-radius: 0;
+}
+
+/* Evita colunas esmagadas demais */
+.table th, .table td { white-space: nowrap; }
+
+
+

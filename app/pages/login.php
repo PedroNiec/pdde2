@@ -1,14 +1,11 @@
 <?php
 declare(strict_types=1);
 
-if (!empty($_SESSION['user_id'])) {
-    header('Location: /index.php?page=home');
-    exit;
-}
 
-$error = $_SESSION['flash_error'] ?? null;
 unset($_SESSION['flash_error']);
+
 ?>
+
 <!doctype html>
 <html lang="pt-BR">
 <head>
@@ -133,11 +130,7 @@ unset($_SESSION['flash_error']);
     <h1>Entrar</h1>
     <p class="subtitle">Use seu email e senha para acessar</p>
 
-    <?php if ($error): ?>
-      <div class="error"><?= htmlspecialchars($error, ENT_QUOTES | ENT_HTML5) ?></div>
-    <?php endif; ?>
-
-    <form method="POST" action="/actions/login_action.php">
+<form method="POST" action="/actions/login_action.php">
       <div class="field">
         <label for="email">Email</label>
         <input type="email" id="email" name="email" required autofocus>

@@ -8,7 +8,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_set_cookie_params([
         'lifetime' => 0,
         'path' => '/',
-        'domain' => $_SERVER['HTTP_HOST'] ?? '',
         'secure' => isset($_SERVER['HTTPS']),
         'httponly' => true,
         'samesite' => 'Lax',
@@ -29,26 +28,26 @@ if (!class_exists('Database')) {
         public static function getConnection(): PDO
         {
             if (self::$instance === null) {
-                // Credenciais hardcoded temporárias
                 $host = 'db.fkfkhzfcyuuwvwufhrrj.supabase.co';
                 $name = 'postgres';
                 $user = 'postgres';
                 $pass = 'IyweOVEcT0S1ZOVL';
+                $port = '5432';
 
                 try {
                     self::$instance = new PDO(
-                        "pgsql:host={$host};dbname={$name}",
-                        $user,
-                        $pass,
-                        [
-                            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                        ]
-                    );
+                    "pgsql:host={$host};port={$port};dbname={$name};sslmode=require",
+                    $user,
+                    $pass,
+                    [
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    ]
+                );;
                 } catch (PDOException $e) {
-                    error_log($e->getMessage()); // log do erro
+                    error_log('DB CONNECT ERROR: ' . $e->getMessage());
                     http_response_code(500);
-                    exit('Erro ao conectar ao banco de dados.');
+                    exit('Erro ao conectar ao banco de dados: ' . $e->getMessage());
                 }
             }
 
