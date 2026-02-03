@@ -90,6 +90,7 @@ body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI
   text-decoration: none;
   font-size: 14px;
   font-weight: 600;
+  cursor: pointer;
 }
 
 /* Header da página */
@@ -239,12 +240,12 @@ body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI
   color: #991b1b;
 }
 
-.card{
+.card {
   background: #fff;
-  border: 1px solid #e5e7eb;
   border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 14px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  margin-top: 24px;
 }
 
 .section-title{
@@ -345,5 +346,39 @@ body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI
 /* Evita colunas esmagadas demais */
 .table th, .table td { white-space: nowrap; }
 
+.table--requisicoes {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table--requisicoes.table--striped tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.table--requisicoes.table--hover tbody tr:hover {
+  background-color: #f1f5f9;
+  transition: background-color 0.2s ease;
+}
+
+/* Cabeçalho da tabela de requisições */
+.table--requisicoes thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.table--requisicoes thead th {
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 16px 20px;
+  text-align: left;
+}
+
+/* Células da tabela de requisições */
+.table--requisicoes tbody td {
+  padding: 18px 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
 
 

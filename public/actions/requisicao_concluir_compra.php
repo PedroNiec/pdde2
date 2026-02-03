@@ -29,11 +29,14 @@ try {
     $service->concluirCompraParaEscola($requisicaoId, $escolaId);
 
     $_SESSION['flash_success'] = 'Compra concluída com sucesso.';
+
     header('Location: /index.php?page=requisicao_detalhe&id=' . urlencode($requisicaoId));
     exit;
 
+
 } catch (Throwable $e) {
     $_SESSION['flash_error'] = $e->getMessage();
-    header('Location: /index.php?page=requisicao_detalhe&id=' . urlencode($requisicaoId));
+    $redirect = '/index.php?page=requisicao_detalhe&id=' . urlencode($requisicaoId ?: ($_POST['requisicao_id'] ?? ''));
+    header('Location: ' . $redirect);
     exit;
 }

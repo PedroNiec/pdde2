@@ -13,6 +13,7 @@ class OfertaRepository
             o.id,
             o.valor_unitario,
             o.created_at,
+            o.valor_total,
             f.nome AS fornecedor_nome
           FROM ofertas o
           INNER JOIN fornecedores f ON f.id = o.fornecedor_id
@@ -41,18 +42,19 @@ public function fornecedorJaOfertou(string $requisicaoId, string $fornecedorId):
     return (bool)$stmt->fetchColumn();
 }
 
-public function criar(string $requisicaoId, string $fornecedorId, float $valorUnitario): string
+public function criar(string $requisicaoId, string $fornecedorId, float $valorUnitario, float $valorTotal): string
 {
     $sql = "
-      INSERT INTO ofertas (requisicao_id, fornecedor_id, valor_unitario)
-      VALUES (:rid, :fid, :valor)
+      INSERT INTO ofertas (requisicao_id, fornecedor_id, valor_unitario, valor_total)
+      VALUES (:rid, :fid, :valor_unitario, :valor_total)
       RETURNING id
     ";
     $stmt = $this->pdo->prepare($sql);
     $stmt->execute([
         'rid' => $requisicaoId,
         'fid' => $fornecedorId,
-        'valor' => $valorUnitario,
+        'valor_unitario' => $valorUnitario,
+        'valor_total' => $valorTotal,
     ]);
     return (string)$stmt->fetchColumn();
 }

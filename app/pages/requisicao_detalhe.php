@@ -12,6 +12,9 @@ $pdo = Database::getConnection();
 $success = $_SESSION['flash_success'] ?? null;
 unset($_SESSION['flash_success']);
 
+$error = $_SESSION['flash_error'] ?? null;
+unset($_SESSION['flash_error']);
+
 
 $repo = new RequisicaoRepository($pdo);
 $pddeRepo = new PddeRepository($pdo);
@@ -40,6 +43,16 @@ try {
   </div>
   <a href="/index.php?page=requisicoes" class="btn-secondary">Voltar</a>
 </div>
+
+<?php if ($success): ?>
+  <div class="alert alert--success"><?= htmlspecialchars($success) ?></div>
+<?php endif; ?>
+
+<?php if ($error): ?>
+  <div class="alert alert--error"><?= htmlspecialchars($error) ?></div>
+<?php endif; ?>
+
+
 
 <div class="card">
   <div class="kv-grid">
@@ -118,6 +131,7 @@ $isEmCompra = (($req['status'] ?? '') === 'em_compra');
     <tr>
       <th>Fornecedor</th>
       <th class="col-num">Valor unitário</th>
+      <th class="col-val">Valor total</th>
       <th class="col-date">Enviada em</th>
       <th class="col-actions">Ação</th>
     </tr>
@@ -136,6 +150,12 @@ $isEmCompra = (($req['status'] ?? '') === 'em_compra');
           <td class="col-num">
             <?php
               $v = (string)($o['valor_unitario'] ?? '0');
+              echo 'R$ ' . number_format((float)$v, 2, ',', '.');
+            ?>
+          </td>
+          <td class="col-val">
+            <?php
+              $v = (string)($o['valor_total'] ?? '0');
               echo 'R$ ' . number_format((float)$v, 2, ',', '.');
             ?>
           </td>

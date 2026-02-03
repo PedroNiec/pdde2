@@ -67,28 +67,27 @@ class RequisicaoService
         }
 
         public function buscarDetalheParaEscola(string $requisicaoId, string $escolaId): array
-{
-    if ($requisicaoId === '' || $escolaId === '') {
-        throw new \InvalidArgumentException('Parâmetros inválidos.');
-    }
+        {
+            if ($requisicaoId === '' || $escolaId === '') {
+                throw new \InvalidArgumentException('Parâmetros inválidos.');
+            }
 
-    $req = $this->repo->buscarDetalhe($requisicaoId);
+            $req = $this->repo->buscarDetalhe($requisicaoId);
 
-    if (!$req) {
-        throw new \InvalidArgumentException('Requisição não encontrada.');
-    }
+            if (!$req) {
+                throw new \InvalidArgumentException('Requisição não encontrada.');
+            }
 
-    // regra de segurança
-    if ((string)$req['escola_id'] !== $escolaId) {
-        throw new \InvalidArgumentException('Você não tem acesso a esta requisição.');
-    }
+            // regra de segurança
+            if ((string)$req['escola_id'] !== $escolaId) {
+                throw new \InvalidArgumentException('Você não tem acesso a esta requisição.');
+            }
 
-    return $req;
-}
+            return $req;
+        }
 
 public function listarOfertasDaRequisicaoParaEscola(string $requisicaoId, string $escolaId): array
 {
-    // garante acesso antes de listar ofertas
     $this->buscarDetalheParaEscola($requisicaoId, $escolaId);
 
     return $this->ofertaRepo->listarPorRequisicao($requisicaoId);
@@ -145,6 +144,7 @@ public function concluirCompraParaEscola(string $requisicaoId, string $escolaId)
     }
 
     $total = $qtd * $valorUnit;
+
     $pddeId = (string)($dados['pdde_id'] ?? '');
     if ($pddeId === '') {
         throw new \RuntimeException('PDDE inválido.');

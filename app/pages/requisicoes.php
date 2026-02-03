@@ -14,8 +14,11 @@ $pdde = new PddeRepository($pdo);
 $caterogia = new CategoriaRepository($pdo);
 $oferta = new OfertaRepository($pdo);
 
+$success = $_SESSION['flash_success'] ?? null;
+unset($_SESSION['flash_success']);
 
-
+$error = $_SESSION['flash_error'] ?? null;
+unset($_SESSION['flash_error']);
 
 $service = new RequisicaoService($repo, $pdde, $caterogia, $oferta);
 
@@ -36,6 +39,14 @@ $requisicoes = $escolaId ? $service->listarPorEscola($escolaId) : [];
     Nova requisição
   </a>
 </div>
+
+<?php if ($success): ?>
+  <div class="alert alert--success"><?= htmlspecialchars($success) ?></div>
+<?php endif; ?>
+
+<?php if ($error): ?>
+  <div class="alert alert--error"><?= htmlspecialchars($error) ?></div>
+<?php endif; ?>
 
 
 <table class="table">

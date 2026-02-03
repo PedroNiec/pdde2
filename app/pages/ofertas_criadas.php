@@ -55,7 +55,8 @@ $ofertas = $service->ofertasPorFornecedor($fornecedorId);
       <th>Produto</th>
       <th>Categoria</th>
       <th class="col-num">Qtd</th>
-      <th class="col-num">Valor</th>
+      <th class="col-num">Valor unitário</th>
+      <th class="col-num">Valor total</th>
       <th>Criado em</th>
     </tr>
   </thead>
@@ -65,7 +66,11 @@ $ofertas = $service->ofertasPorFornecedor($fornecedorId);
         <td colspan="5" style="text-align:center; color:#666;">Nenhuma oferta criada por você no momento</td>
       </tr>
     <?php else: ?>
-      <?php foreach ($ofertas as $r): ?>
+      <?php foreach ($ofertas as $r): 
+        
+        $valorTotal = $r['quantidade'] * $r['valor_unitario'];
+
+        ?>
         <tr>
           <td><?= htmlspecialchars($r['produto'] ?? '-') ?></td>
             <td><?= htmlspecialchars($r['categoria'] ?? '-') ?></td>
@@ -74,6 +79,14 @@ $ofertas = $service->ofertasPorFornecedor($fornecedorId);
             <span class="price">
                 <?php
                 $v = $r['valor_unitario'] ?? null;
+                echo $v !== null ? 'R$ ' . number_format((float)$v, 2, ',', '.') : '-';
+                ?>
+            </span>
+            </td>
+            <td class="col-num">
+            <span class="price">
+                <?php
+                $v = $valorTotal ?? null;
                 echo $v !== null ? 'R$ ' . number_format((float)$v, 2, ',', '.') : '-';
                 ?>
             </span>

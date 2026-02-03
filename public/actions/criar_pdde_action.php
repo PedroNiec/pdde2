@@ -15,8 +15,8 @@ $data = [
     'escola_id' => $escolaId,
     'nome' => trim((string)($_POST['nome'] ?? '')),
     'created_at' => (new DateTime())->format('Y-m-d H:i:s'),
-    'saldo_atual' => $_POST['saldo_inicial'] ?? 0,
-    'saldo_atual' => $_POST['saldo_inicial'] ?? 0,
+    'saldo_inicial' => $_POST['saldo_inicial'] ?? 0,
+    'saldo_disponivel' => $_POST['saldo_inicial'] ?? 0,
 ];
 
 $created = $repo->criar($data);

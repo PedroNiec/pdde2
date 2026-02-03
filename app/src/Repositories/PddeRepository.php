@@ -38,14 +38,15 @@ class PddeRepository
 
     public function criar(array $data)
     {
-        $sql = "INSERT INTO pddes (escola_id, nome, created_at, saldo_inicial)
-                VALUES (:escola_id, :nome, :created_at, :saldo_inicial)";
+        $sql = "INSERT INTO pddes (escola_id, nome, created_at, saldo_inicial, saldo_disponivel)
+                VALUES (:escola_id, :nome, :created_at, :saldo_inicial, :saldo_disponivel)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'escola_id' => $data['escola_id'],
             'nome' => $data['nome'],
             'created_at' => $data['created_at'],
             'saldo_inicial' => $data['saldo_inicial'] ?? 0,
+            'saldo_disponivel' => $data['saldo_inicial'] ?? 0,
         ]);
     }
 
@@ -90,34 +91,36 @@ class PddeRepository
     }
 
     public function debitarDisponivelEAdicionarGasto(string $pddeId, float $valor): void
-{
-    if ($valor <= 0) {
-        throw new \InvalidArgumentException('Valor inválido.');
+    {
+        if ($valor <= 0) {
+            throw new \InvalidArgumentException('Valor inválido.');
+        }
+
+        $stmt = $this->pdo->prepare("SELECT saldo_disponivel FROM pddes WHERE id = :id FOR UPDATE");
+        $stmt->execute(['id' => $pddeId]);
+        $saldo = $stmt->fetchColumn();
+
+        if ($saldo === false) {
+            throw new \RuntimeException('PDDE não encontrado.');
+        }
+
+        
+
+        $saldoDisponivel = (float)$saldo;
+        if ($saldoDisponivel < $valor) {
+            throw new \InvalidArgumentException('Saldo insuficiente no PDDE para concluir a compra.');
+        }
+
+
+        $upd = $this->pdo->prepare("
+        UPDATE pddes
+        SET
+            saldo_disponivel = saldo_disponivel - :v,
+            saldo_gasto = saldo_gasto + :v
+        WHERE id = :id
+        ");
+        $upd->execute(['v' => $valor, 'id' => $pddeId]);
     }
-
-    // trava a linha do PDDE para evitar corrida
-    $stmt = $this->pdo->prepare("SELECT saldo_disponivel FROM pddes WHERE id = :id FOR UPDATE");
-    $stmt->execute(['id' => $pddeId]);
-    $saldo = $stmt->fetchColumn();
-
-    if ($saldo === false) {
-        throw new \RuntimeException('PDDE não encontrado.');
-    }
-
-    $saldoDisponivel = (float)$saldo;
-    if ($saldoDisponivel < $valor) {
-        throw new \RuntimeException('Saldo insuficiente no PDDE para concluir a compra.');
-    }
-
-    $upd = $this->pdo->prepare("
-      UPDATE pddes
-      SET
-        saldo_disponivel = saldo_disponivel - :v,
-        saldo_gasto = saldo_gasto + :v
-      WHERE id = :id
-    ");
-    $upd->execute(['v' => $valor, 'id' => $pddeId]);
-}
 
 public function bloquearSaldo(string $pddeId, float $valor): void
 {

@@ -28,8 +28,8 @@ class FornecedorService
             throw new \InvalidArgumentException('Valor unitário deve ser maior que zero.');
         }
 
-        // Regra: só oferta em requisição aberta
         $req = $this->requisicaoRepo->buscarDetalhe($requisicaoId);
+
         if (!$req) {
             throw new \InvalidArgumentException('Requisição não encontrada.');
         }
@@ -37,12 +37,15 @@ class FornecedorService
             throw new \InvalidArgumentException('Só é possível ofertar em requisições abertas.');
         }
 
-        // Regra: fornecedor não pode ofertar duas vezes
         if ($this->ofertaRepo->fornecedorJaOfertou($requisicaoId, $fornecedorId)) {
             throw new \InvalidArgumentException('Você já enviou uma oferta para esta requisição.');
         }
 
-        return $this->ofertaRepo->criar($requisicaoId, $fornecedorId, $valorUnitario);
+        $quantidade = (int)($req['quantidade'] ?? 0);
+
+        $valorTotal = $valorUnitario * $quantidade;
+
+        return $this->ofertaRepo->criar($requisicaoId, $fornecedorId, $valorUnitario, $valorTotal);
     }
 
     public function ofertasPorFornecedor(string $fornecedorId): array
