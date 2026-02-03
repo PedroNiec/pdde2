@@ -112,6 +112,8 @@ public function iniciarCompraParaEscola(string $requisicaoId, string $escolaId):
 {
     $req = $this->buscarDetalheParaEscola($requisicaoId, $escolaId);
 
+    $oferta = $this->ofertaRepo->buscarSelecionadaPorRequisicao($requisicaoId);
+
     if (($req['status'] ?? '') !== 'aberta') {
         throw new \InvalidArgumentException('Só é possível iniciar compra quando a requisição está aberta.');
     }
@@ -120,7 +122,7 @@ public function iniciarCompraParaEscola(string $requisicaoId, string $escolaId):
         throw new \InvalidArgumentException('Selecione uma oferta antes de iniciar a compra.');
     }
 
-    $this->repo->iniciarCompra($requisicaoId);
+    $this->repo->iniciarCompra($req, $oferta);
 }
 
 
@@ -149,6 +151,12 @@ public function concluirCompraParaEscola(string $requisicaoId, string $escolaId)
     if ($pddeId === '') {
         throw new \RuntimeException('PDDE inválido.');
     }
+
+    $saldoBloqueadoPdde = $this->pddeRepo->buscarSaldoBloqueadoPorIdRequisicao($requisicaoId);
+    (float)$saldoBloq = $saldoBloqueadoPdde['saldo_bloqueado'] ?? 0;
+    $totalDesbloquear = $saldoBloq - $total;
+    $this->pddeRepo->desbloquearSaldo($pddeId, $totalDesbloquear);
+
 
     $pdo->beginTransaction();
     try {

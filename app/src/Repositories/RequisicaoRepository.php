@@ -106,7 +106,7 @@ public function selecionarOferta(string $requisicaoId, string $ofertaId): void
     }
 }
 
-public function iniciarCompra(string $requisicaoId): void
+public function iniciarCompra(array $requisicao, array $oferta): void
 {
     $sql = "
       UPDATE requisicoes
@@ -117,11 +117,28 @@ public function iniciarCompra(string $requisicaoId): void
     ";
 
     $stmt = $this->pdo->prepare($sql);
-    $stmt->execute(['id' => $requisicaoId]);
+    $stmt->execute(['id' => $requisicao['id']]);
 
     if ($stmt->rowCount() === 0) {
         throw new \RuntimeException('Não foi possível iniciar a compra. Verifique se a requisição está aberta e possui oferta selecionada.');
     }
+
+    $saldo_bloqueado = $oferta['valor_total'];
+
+     $sql = "
+      UPDATE pddes
+      SET saldo_bloqueado = :saldo_bloqueado,
+      saldo_disponivel = saldo_disponivel - :saldo_bloqueado
+      WHERE id = :pdde_id
+    ";
+
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute([
+        'saldo_bloqueado' => $saldo_bloqueado,
+        'pdde_id' => $requisicao['pdde_id']
+    ]);
+
+      
 }
 
 public function listarAbertasParaFornecedor(string $fornecedorId, array $categoriaIds): array

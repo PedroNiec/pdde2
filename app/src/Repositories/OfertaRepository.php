@@ -82,4 +82,26 @@ public function ofertasPorFornecedor(string $fornecedorId): array
     return $stmt->fetchAll(\PDO::FETCH_ASSOC);
 }
 
+public function buscarSelecionadaPorRequisicao(string $requisicaoId): ?array
+  {
+      $sql = "
+        SELECT
+          o.id,
+          o.valor_unitario,
+          o.valor_total,
+          f.nome AS fornecedor_nome
+        FROM ofertas o
+        INNER JOIN requisicoes r ON r.oferta_selecionada_id = o.id
+        INNER JOIN fornecedores f ON f.id = o.fornecedor_id
+        WHERE r.id = :rid
+        LIMIT 1
+      ";
+
+      $stmt = $this->pdo->prepare($sql);
+      $stmt->execute(['rid' => $requisicaoId]);
+      $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+      return $row ?: null;
+
+  }
 }

@@ -59,7 +59,7 @@ $pageFile = __DIR__ . "/../app/pages/{$page}.php";
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PDDE</title>
+  <title>PddeControla</title>
   <link rel="stylesheet" href="/assets/app.css">
 </head>
 <body>

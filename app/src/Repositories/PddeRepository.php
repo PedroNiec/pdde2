@@ -96,17 +96,20 @@ class PddeRepository
             throw new \InvalidArgumentException('Valor inválido.');
         }
 
-        $stmt = $this->pdo->prepare("SELECT saldo_disponivel FROM pddes WHERE id = :id FOR UPDATE");
+        $stmt = $this->pdo->prepare("SELECT saldo_bloqueado FROM pddes WHERE id = :id FOR UPDATE");
         $stmt->execute(['id' => $pddeId]);
-        $saldo = $stmt->fetchColumn();
+        $saldoBloquedo = $stmt->fetchColumn();
 
-        if ($saldo === false) {
+        if ($saldoBloquedo === false) {
             throw new \RuntimeException('PDDE não encontrado.');
         }
 
+        var_dump($saldoBloquedo);
+        exit;
+
         
 
-        $saldoDisponivel = (float)$saldo;
+        $saldoDisponivel = (float)$saldoBloquedo;
         if ($saldoDisponivel < $valor) {
             throw new \InvalidArgumentException('Saldo insuficiente no PDDE para concluir a compra.');
         }
@@ -115,73 +118,43 @@ class PddeRepository
         $upd = $this->pdo->prepare("
         UPDATE pddes
         SET
-            saldo_disponivel = saldo_disponivel - :v,
             saldo_gasto = saldo_gasto + :v
         WHERE id = :id
         ");
         $upd->execute(['v' => $valor, 'id' => $pddeId]);
     }
 
-public function bloquearSaldo(string $pddeId, float $valor): void
-{
-    if ($valor <= 0) {
-        throw new \InvalidArgumentException('Valor inválido.');
+    public function buscarSaldoBloqueadoPorIdRequisicao(string $requisicaoId): ?array
+    {
+        $sql = "
+      SELECT
+        p.saldo_bloqueado
+      FROM pddes p
+      JOIN requisicoes r ON r.pdde_id = p.id
+      WHERE r.id = :req_id
+      LIMIT 1
+    ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['req_id' => $requisicaoId]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return $row ?: null;
+
     }
 
-    // trava linha do PDDE
-    $stmt = $this->pdo->prepare("SELECT saldo_disponivel FROM pddes WHERE id = :id FOR UPDATE");
-    $stmt->execute(['id' => $pddeId]);
-    $saldo = $stmt->fetchColumn();
-
-    if ($saldo === false) {
-        throw new \RuntimeException('PDDE não encontrado.');
+    public function desbloquearSaldo(string $pddeId, float $valor): void
+    {
+        $sql = "
+        UPDATE pddes
+            SET saldo_bloqueado = :saldo_bloqueado
+            WHERE id = :pdde_id
+        ";  
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'saldo_bloqueado' => $valor,
+            'pdde_id' => $pddeId
+        ]);
     }
-
-    $disponivel = (float)$saldo;
-    if ($disponivel < $valor) {
-        throw new \RuntimeException('Saldo insuficiente no PDDE para iniciar a compra.');
-    }
-
-    $upd = $this->pdo->prepare("
-      UPDATE pddes
-      SET
-        saldo_disponivel = saldo_disponivel - :v,
-        saldo_bloqueado = saldo_bloqueado + :v
-      WHERE id = :id
-    ");
-    $upd->execute(['v' => $valor, 'id' => $pddeId]);
-}
-
-public function consumirSaldoBloqueado(string $pddeId, float $valor): void
-{
-    if ($valor <= 0) {
-        throw new \InvalidArgumentException('Valor inválido.');
-    }
-
-    // trava linha do PDDE
-    $stmt = $this->pdo->prepare("SELECT saldo_bloqueado FROM pddes WHERE id = :id FOR UPDATE");
-    $stmt->execute(['id' => $pddeId]);
-    $saldo = $stmt->fetchColumn();
-
-    if ($saldo === false) {
-        throw new \RuntimeException('PDDE não encontrado.');
-    }
-
-    $bloqueado = (float)$saldo;
-    if ($bloqueado < $valor) {
-        throw new \RuntimeException('Saldo bloqueado insuficiente para concluir a compra.');
-    }
-
-    $upd = $this->pdo->prepare("
-      UPDATE pddes
-      SET
-        saldo_bloqueado = saldo_bloqueado - :v,
-        saldo_gasto = saldo_gasto + :v
-      WHERE id = :id
-    ");
-    $upd->execute(['v' => $valor, 'id' => $pddeId]);
-}
-
-
 
 }
