@@ -25,8 +25,6 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute(['email' => $email]);
 $user = $stmt->fetch();
 
-error_log('LOGIN DEBUG user=' . json_encode($user));
-
 
 if (!$user || !$user['active'] || !password_verify($password, $user['password_hash'])) {
     $_SESSION['flash_error'] = 'Login inválido.';
@@ -39,13 +37,6 @@ $_SESSION['role']    = trim((string)($user['role'] ?? 'user'));
 $_SESSION['name']    = (string)($user['name'] ?? '');
 $_SESSION['escola_id'] = $user['escola_id'] ?? null;
 $_SESSION['fornecedor_id'] = $user['fornecedor_id'] ?? null;
-
-error_log('LOGIN DEBUG session=' . json_encode([
-  'user_id' => $_SESSION['user_id'] ?? null,
-  'role' => $_SESSION['role'] ?? null,
-  'escola_id' => $_SESSION['escola_id'] ?? null,
-  'fornecedor_id' => $_SESSION['fornecedor_id'] ?? null,
-]));
 
 
 /* Gate por role + vínculo */
