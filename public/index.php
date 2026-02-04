@@ -106,9 +106,18 @@ $pageFile = __DIR__ . "/../app/pages/{$page}.php";
 <?php else: ?>
 
   <aside class="sidebar">
-    <div class="sidebar__brand">PddeControla</div>
+      <div class="sidebar__logo">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="32" height="32" rx="6" fill="#001F3F"/>
+              <rect x="8" y="7" width="4" height="18" fill="white"/>
+              <path d="M12 7H18C21.3137 7 24 9.68629 24 13C24 16.3137 21.3137 19 18 19H12V7Z" fill="#2ECC71"/>
+              <path d="M20 13L24 13L22 10L20 13Z" fill="#001F3F"/>
+          </svg>
+          <span class="sidebar__logo-text">PddeControla</span>
+      </div>
 
-    <nav class="sidebar__nav">
+
+      <nav class="sidebar__nav">
       <?php if ($role === 'escola'): ?>
         <a class="sidebar__link <?= $page === 'home' ? 'is-active' : '' ?>"
            href="/index.php?page=home">Home</a>
