@@ -3,6 +3,36 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../app/core/bootstrap.php';
 
+$action = $_GET['action'] ?? '';
+
+$allowedActions = [
+        'criar_pdde_action',
+        'login_action',
+        'pdde_update',
+];
+
+if ($action) {
+    if (!in_array($action, $allowedActions, true)) {
+        http_response_code(404);
+        exit('Ação não encontrada');
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        exit('Método não permitido');
+    }
+
+    $isLogged = !empty($_SESSION['user_id']);
+    if (!$isLogged && $action != 'login_action') {
+        http_response_code(401);
+        exit('Não autenticado');
+    }
+
+    require __DIR__ . "/../app/actions/{$action}.php";
+    exit;
+}
+
+
 $page = $_GET['page'] ?? 'login';
 
 $allowedPages = [
@@ -57,10 +87,13 @@ $pageFile = __DIR__ . "/../app/pages/{$page}.php";
 <!doctype html>
 <html lang="pt-br">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PddeControla</title>
-  <link rel="stylesheet" href="/assets/app.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PddeControla</title>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32' fill='none'><rect width='32' height='32' rx='6' fill='%23001F3F'/><rect x='8' y='7' width='4' height='18' fill='white'/><path d='M12 7H18C21.3137 7 24 9.68629 24 13C24 16.3137 21.3137 19 18 19H12V7Z' fill='%232ECC71'/><path d='M20 13L24 13L22 10L20 13Z' fill='%23001F3F'/></svg>">
+
+    <link rel="stylesheet" href="/assets/app.css">
 </head>
 <body>
 

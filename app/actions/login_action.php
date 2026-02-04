@@ -1,43 +1,73 @@
 <?php
-require __DIR__ . '/../core/bootstrap.php';
+declare(strict_types=1);
 
-echo 'CHEGANDO AQUI LOGIN ACTION';
+require_once __DIR__ . '/../../app/core/bootstrap.php';
 
 $email = trim($_POST['email'] ?? '');
-$password = $_POST['password'] ?? '';
+$password = (string)($_POST['password'] ?? '');
 
 if ($email === '' || $password === '') {
-    $_SESSION['flash_error'] = 'Preencha email e senha';
+    $_SESSION['flash_error'] = 'Preencha email e senha.';
     header('Location: /index.php?page=login');
     exit;
 }
 
-// busca usu�rio no banco
-$sql = 'SELECT id, name, email, password_hash, role, active
-        FROM users
-        WHERE email = :email
-        LIMIT 1';
+$pdo = Database::getConnection();
+
+$sql = <<<SQL
+SELECT id, name, email, password_hash, role, active, escola_id, fornecedor_id
+FROM users
+WHERE email = :email
+LIMIT 1
+SQL;
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute(['email' => $email]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
+$user = $stmt->fetch();
 
-// valida usu�rio
-if (
-    !$user ||
-    !$user['active'] ||
-    !password_verify($password, $user['password_hash'])
-) {
-    $_SESSION['flash_error'] = 'Login inv�lido';
+error_log('LOGIN DEBUG user=' . json_encode($user));
+
+
+if (!$user || !$user['active'] || !password_verify($password, $user['password_hash'])) {
+    $_SESSION['flash_error'] = 'Login inválido.';
     header('Location: /index.php?page=login');
     exit;
 }
 
-// login OK ? cria sess�o
-$_SESSION['user_id'] = $user['id'];
-$_SESSION['role']    = $user['role'] ?? 'user';
-$_SESSION['name']    = $user['name'];
+$_SESSION['user_id'] = (int)$user['id'];
+$_SESSION['role']    = trim((string)($user['role'] ?? 'user'));
+$_SESSION['name']    = (string)($user['name'] ?? '');
+$_SESSION['escola_id'] = $user['escola_id'] ?? null;
+$_SESSION['fornecedor_id'] = $user['fornecedor_id'] ?? null;
 
-// redirect p�s-login
+error_log('LOGIN DEBUG session=' . json_encode([
+  'user_id' => $_SESSION['user_id'] ?? null,
+  'role' => $_SESSION['role'] ?? null,
+  'escola_id' => $_SESSION['escola_id'] ?? null,
+  'fornecedor_id' => $_SESSION['fornecedor_id'] ?? null,
+]));
+
+
+/* Gate por role + vínculo */
+if ($_SESSION['role'] === 'fornecedor') {
+    if (empty($_SESSION['fornecedor_id'])) {
+        $_SESSION['flash_error'] = 'Usuário fornecedor sem fornecedor_id vinculado.';
+        header('Location: /index.php?page=login');
+        exit;
+    }
+    header('Location: /index.php?page=fornecedor_requisicoes');
+    exit;
+}
+
+if ($_SESSION['role'] === 'escola') {
+    if (empty($_SESSION['escola_id'])) {
+        $_SESSION['flash_error'] = 'Usuário escola sem escola_id vinculado.';
+        header('Location: /index.php?page=login');
+        exit;
+    }
+    header('Location: /index.php?page=requisicoes');
+    exit;
+}
+
 header('Location: /index.php?page=home');
 exit;

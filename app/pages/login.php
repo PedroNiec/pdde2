@@ -130,7 +130,7 @@ unset($_SESSION['flash_error']);
     <h1>Entrar</h1>
     <p class="subtitle">Use seu email e senha para acessar</p>
 
-<form method="POST" action="/actions/login_action.php">
+<form method="POST" action="/index.php?action=login_action">
       <div class="field">
         <label for="email">Email</label>
         <input type="email" id="email" name="email" required autofocus>

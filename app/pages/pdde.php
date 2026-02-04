@@ -269,7 +269,7 @@ $pddes = $escolaId ? $repo->listarPorEscola($escolaId) : [];
   <?php endif; ?>
 
   <div class="card form-card">
-    <form method="POST" action="/actions/criar_pdde_action.php" class="form">
+    <form method="POST" action="/index.php?action=criar_pdde_action" class="form">
       <div class="form-row">
         <div class="field" style="flex: 2;">
           <label for="nome">Nome do PDDE</label>

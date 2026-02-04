@@ -43,7 +43,7 @@ $saldoAtual = (float)($pdde['saldo_disponivel'] ?? 0);
   <div class="alert alert--error"><?= htmlspecialchars($error) ?></div>
 <?php endif; ?>
 
-<form method="POST" action="/actions/pdde_update.php" class="form">
+<form method="POST" action="/index.php?action=pdde_update" class="form">
   <input type="hidden" name="id" value="<?= htmlspecialchars((string)$pdde['id']) ?>">
 
   <div class="form-row">
