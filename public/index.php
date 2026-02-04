@@ -9,6 +9,9 @@ $allowedActions = [
         'criar_pdde_action',
         'login_action',
         'pdde_update',
+        'requisicao_store',
+        'requisicao_iniciar_compra',
+        'requisicao_concluir_compra',
 ];
 
 if ($action) {
@@ -125,7 +128,7 @@ $pageFile = __DIR__ . "/../app/pages/{$page}.php";
         <a class="sidebar__link <?= $page === 'requisicoes' ? 'is-active' : '' ?>"
            href="/index.php?page=requisicoes">Requisições</a>
         <a class="sidebar__link <?= $page === 'pdde' ? 'is-active' : '' ?>"
-            href="/index.php?page=pdde">PDDE</a>
+            href="/index.php?page=pdde">Pdde</a>
       <?php endif; ?>
 
       <?php if ($role === 'fornecedor'): ?>
