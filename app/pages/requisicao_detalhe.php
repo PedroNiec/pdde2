@@ -177,7 +177,7 @@ $isEmCompra = (($req['status'] ?? '') === 'em_compra');
     <span class="badge badge--done">Selecionada</span>
 
   <?php elseif ($isAberta): ?>
-    <form method="POST" action="/actions/oferta_selecionar.php" style="margin:0;">
+    <form method="POST" action="/index.php?action=oferta_selecionar" style="margin:0;">
       <input type="hidden" name="requisicao_id" value="<?= htmlspecialchars($req['id']) ?>">
       <input type="hidden" name="oferta_id" value="<?= htmlspecialchars($thisId) ?>">
       <button type="submit" class="btn-small">Selecionar</button>

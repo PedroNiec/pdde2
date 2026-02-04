@@ -40,7 +40,7 @@ unset($_SESSION['flash_error']);
   <div class="alert alert--error"><?= htmlspecialchars($error) ?></div>
 <?php endif; ?>
 
-<form method="POST" action="/actions/oferta_store.php" class="form">
+<form method="POST" action="/index.php?action=oferta_store.php" class="form">
   <input type="hidden" name="requisicao_id" value="<?= htmlspecialchars($requisicaoId) ?>">
 
   <div class="form-row">

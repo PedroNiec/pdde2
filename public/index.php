@@ -12,6 +12,8 @@ $allowedActions = [
         'requisicao_store',
         'requisicao_iniciar_compra',
         'requisicao_concluir_compra',
+        'oferta_store',
+        'oferta_selecionar',
 ];
 
 if ($action) {
