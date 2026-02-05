@@ -4,6 +4,8 @@ declare(strict_types=1);
 require_once __DIR__ . '/../Repositories/RequisicaoRepository.php';
 require_once __DIR__ . '/../Repositories/PddeRepository.php';
 require_once __DIR__ . '/../Repositories/OfertaRepository.php';
+require_once __DIR__ . '/../Repositories/AutorizacoesRepository.php';
+require_once __DIR__ . '/../Services/AutorizacoesService.php';
 
 
 class RequisicaoService
@@ -33,9 +35,14 @@ class RequisicaoService
     }
 
         
-    public function criar(string $escolaId, string $pddeId, ?string $categoriaId, string $produto, int $quantidade): string
+    public function criar(array $data): string
         {
-            $produto = trim($produto);
+            $escolaId = $data['escola_id'] ?? '';
+            $pddeId = $data['pdde_id'] ?? '';
+            $categoriaId = $data['categoria_id'] ?? null;
+            $produto = trim($data['produto'] ?? '');
+            $quantidade = (int)($data['quantidade'] ?? 0);
+            $obs = (string)($data['obs'] ?? '');
 
             if ($escolaId === '' || $pddeId === '') {
                 throw new \InvalidArgumentException('Escola e PDDE são obrigatórios.');
@@ -63,6 +70,7 @@ class RequisicaoService
                 'categoria_id' => $categoriaId,
                 'produto' => $produto,
                 'quantidade' => $quantidade,
+                'obs' => $obs,
             ]);
         }
 
@@ -130,7 +138,13 @@ public function concluirCompraParaEscola(string $requisicaoId, string $escolaId)
 {
    $pdo = Database::getConnection();
 
+   $autRepository = new AutorizacoesRepository($pdo);
+   $autService = new AutorizacoesService($autRepository);
+
     $dados = $this->repo->buscarParaConclusao($requisicaoId, $escolaId);
+
+    $autService->criarAutorizacao($requisicaoId, $dados);
+
     if (!$dados) {
         throw new \RuntimeException('Requisição não encontrada.');
     }
@@ -163,6 +177,9 @@ public function concluirCompraParaEscola(string $requisicaoId, string $escolaId)
         $this->pddeRepo->debitarDisponivelEAdicionarGasto($pddeId, $total);
 
         $this->repo->marcarComoConcluida($requisicaoId);
+
+        $autService->criarAutorizacao($requisicaoId, $dados);
+
 
         $pdo->commit();
     } catch (\Throwable $e) {

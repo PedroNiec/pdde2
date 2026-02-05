@@ -104,8 +104,6 @@ class PddeRepository
             throw new \RuntimeException('PDDE não encontrado.');
         }
 
-        var_dump($saldoBloquedo);
-        exit;
 
         
 
