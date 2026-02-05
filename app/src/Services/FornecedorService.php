@@ -19,13 +19,17 @@ class FornecedorService
         return $this->requisicaoRepo->listarAbertasParaFornecedor($fornecedorId, $categoriaIds);
     }
 
-    public function criarOferta(string $fornecedorId, string $requisicaoId, float $valorUnitario): string
+    public function criarOferta(string $fornecedorId, string $requisicaoId, float $valorUnitario, string $marca): string
     {
         if ($fornecedorId === '' || $requisicaoId === '') {
             throw new \InvalidArgumentException('Dados inválidos.');
         }
         if ($valorUnitario <= 0) {
             throw new \InvalidArgumentException('Valor unitário deve ser maior que zero.');
+        }
+
+        if ($marca == '') {
+            throw new \InvalidArgumentException('Preencha a marca do produto');
         }
 
         $req = $this->requisicaoRepo->buscarDetalhe($requisicaoId);
@@ -45,7 +49,7 @@ class FornecedorService
 
         $valorTotal = $valorUnitario * $quantidade;
 
-        return $this->ofertaRepo->criar($requisicaoId, $fornecedorId, $valorUnitario, $valorTotal);
+        return $this->ofertaRepo->criar($requisicaoId, $fornecedorId, $valorUnitario, $valorTotal, $marca);
     }
 
     public function ofertasPorFornecedor(string $fornecedorId): array

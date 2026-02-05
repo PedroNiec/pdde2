@@ -13,6 +13,7 @@ $fornecedorId = (string)($_SESSION['fornecedor_id'] ?? '');
 
 $requisicaoId = (string)($_POST['requisicao_id'] ?? '');
 $valorUnitario = (float)($_POST['valor_unitario'] ?? 0);
+$marca = (string)($_POST['marca'] ?? '');
 
 try {
     if ($role !== 'fornecedor' || $fornecedorId === '') {
@@ -27,7 +28,7 @@ try {
         new OfertaRepository($pdo)
     );
 
-    $service->criarOferta($fornecedorId, $requisicaoId, $valorUnitario);
+    $service->criarOferta($fornecedorId, $requisicaoId, $valorUnitario, $marca);
 
     $_SESSION['flash_success'] = 'Oferta enviada com sucesso.';
     header('Location: /index.php?page=fornecedor_requisicoes');

@@ -42,11 +42,11 @@ public function fornecedorJaOfertou(string $requisicaoId, string $fornecedorId):
     return (bool)$stmt->fetchColumn();
 }
 
-public function criar(string $requisicaoId, string $fornecedorId, float $valorUnitario, float $valorTotal): string
+public function criar(string $requisicaoId, string $fornecedorId, float $valorUnitario, float $valorTotal, string $marca): string
 {
     $sql = "
-      INSERT INTO ofertas (requisicao_id, fornecedor_id, valor_unitario, valor_total)
-      VALUES (:rid, :fid, :valor_unitario, :valor_total)
+      INSERT INTO ofertas (requisicao_id, fornecedor_id, valor_unitario, valor_total, marca)
+      VALUES (:rid, :fid, :valor_unitario, :valor_total, :marca)
       RETURNING id
     ";
     $stmt = $this->pdo->prepare($sql);
@@ -55,6 +55,7 @@ public function criar(string $requisicaoId, string $fornecedorId, float $valorUn
         'fid' => $fornecedorId,
         'valor_unitario' => $valorUnitario,
         'valor_total' => $valorTotal,
+        'marca' => $marca
     ]);
     return (string)$stmt->fetchColumn();
 }

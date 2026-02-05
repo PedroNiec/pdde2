@@ -40,7 +40,7 @@ unset($_SESSION['flash_error']);
   <div class="alert alert--error"><?= htmlspecialchars($error) ?></div>
 <?php endif; ?>
 
-<form method="POST" action="/index.php?action=oferta_store.php" class="form">
+<form method="POST" action="/index.php?action=oferta_store" class="form">
   <input type="hidden" name="requisicao_id" value="<?= htmlspecialchars($requisicaoId) ?>">
 
   <div class="form-row">
@@ -60,8 +60,8 @@ unset($_SESSION['flash_error']);
           <label for="marca">Marca</label>
           <input
                   type="text"
-                  id="valor_unitario"
-                  name="valor_unitario"
+                  id="marca"
+                  name="marca"
                   required
                   placeholder="Ex.: Tilibra"
           >
