@@ -44,7 +44,7 @@ $allowedPages = [
   'login','home','logout',
   'requisicoes','requisicao_nova','requisicao_detalhe',
   'fornecedor_requisicoes','oferta_nova', 'pdde', 'pdde_editar',
-  'ofertas_criadas'
+  'ofertas_criadas', 'aut_fornecimento'
 ];
 
 if (!in_array($page, $allowedPages, true)) {
@@ -111,15 +111,20 @@ $pageFile = __DIR__ . "/../app/pages/{$page}.php";
 <?php else: ?>
 
   <aside class="sidebar">
-      <div class="sidebar__logo">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="32" height="32" rx="6" fill="#001F3F"/>
-              <rect x="8" y="7" width="4" height="18" fill="white"/>
-              <path d="M12 7H18C21.3137 7 24 9.68629 24 13C24 16.3137 21.3137 19 18 19H12V7Z" fill="#2ECC71"/>
-              <path d="M20 13L24 13L22 10L20 13Z" fill="#001F3F"/>
-          </svg>
-          <span class="sidebar__logo-text">PddeControla</span>
-      </div>
+      <nav class="sidebar__nav">
+          <!-- Logo com alinhamento vertical -->
+          <div class="sidebar__logo" style="display: flex; align-items: center; gap: 12px;">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="32" height="32" rx="6" fill="#001F3F"/>
+                  <rect x="8" y="7" width="4" height="18" fill="white"/>
+                  <path d="M12 7H18C21.3137 7 24 9.68629 24 13C24 16.3137 21.3137 19 18 19H12V7Z" fill="#2ECC71"/>
+                  <path d="M20 13L24 13L22 10L20 13Z" fill="#001F3F"/>
+              </svg>
+              <span class="sidebar__logo-text">PddeControla</span>
+          </div>
+
+          <!-- resto do seu código... -->
+      </nav>
 
 
       <nav class="sidebar__nav">
@@ -138,6 +143,8 @@ $pageFile = __DIR__ . "/../app/pages/{$page}.php";
            href="/index.php?page=fornecedor_requisicoes">Requisições</a>
         <a class="sidebar__link <?= $page === 'ofertas_criadas' ? 'is-active' : '' ?>"
            href="/index.php?page=ofertas_criadas">Ofertas Criadas</a>
+          <a class="sidebar__link <?= $page === 'aut_fornecimento' ? 'is-active' : '' ?>"
+             href="/index.php?page=aut_fornecimento">Autorizações de fornecimento</a>
       <?php endif; ?>
     </nav>
 

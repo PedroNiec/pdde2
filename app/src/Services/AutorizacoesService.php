@@ -12,12 +12,6 @@ class AutorizacoesService
 {
     public function __construct(private AutorizacoesRepository $repository) {}
 
-    /** @return array<int, array{id:string,nome:string}> */
-    public function listarAutorizacoesPorOferta(): array
-    {
-        return $this->repository->listarAutorizacoesPorOferta();
-    }
-
     public function criarAutorizacao(string $requisicaoId, array $dados): void
     {
     $supabaseUrl = 'https://fkfkhzfcyuuwvwufhrrj.supabase.co';

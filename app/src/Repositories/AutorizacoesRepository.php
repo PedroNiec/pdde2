@@ -7,9 +7,14 @@ class AutorizacoesRepository
     public function __construct(private \PDO $pdo) {}
 
     /** @return array<int, array{id:string,nome:string}> */
-    public function listarAutorizacoesPorOferta(): array
+    public function listarAutorizacoesPorOfertaVencedora(): array
     {
-        $sql = "SELECT id, nome FROM categorias ORDER BY nome ASC";
+        $sql = "SELECT * 
+                    FROM autorizacoes_compra a
+                    LEFT JOIN ofertas o ON o.id = a.oferta_id
+                    LEFT JOIN requisicoes r ON r.id = o.requisicao_id
+                    JOIN escolas e ON e.id = r.escola_id
+                    ";
         $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
