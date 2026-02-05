@@ -56,6 +56,16 @@ unset($_SESSION['flash_error']);
         placeholder="Ex.: 12.50"
       >
     </div>
+      <div class="field" style="max-width: 260px;">
+          <label for="marca">Marca</label>
+          <input
+                  type="text"
+                  id="valor_unitario"
+                  name="valor_unitario"
+                  required
+                  placeholder="Ex.: Tilibra"
+          >
+      </div>
   </div>
 
   <div class="form-actions">

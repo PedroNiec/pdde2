@@ -69,6 +69,11 @@ unset($_SESSION['flash_error']);
     </div>
   </div>
 
+    <div class="field">
+        <label for="obs">Observações</label>
+        <input type="text" id="obs" name="obs" min="1" required>
+    </div>
+
   <div class="form-actions">
     <button type="submit" class="btn-primary">Criar requisição</button>
   </div>

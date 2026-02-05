@@ -40,8 +40,8 @@ class RequisicaoRepository
     public function criar(array $data): string
     {
         $sql = "
-            INSERT INTO requisicoes (escola_id, pdde_id, categoria_id, produto, quantidade, status)
-            VALUES (:escola_id, :pdde_id, :categoria_id, :produto, :quantidade, 'aberta')
+            INSERT INTO requisicoes (escola_id, pdde_id, categoria_id, produto, quantidade, status, observacoes)
+            VALUES (:escola_id, :pdde_id, :categoria_id, :produto, :quantidade, 'aberta', :observacoes)
             RETURNING id
         ";
 
@@ -49,9 +49,10 @@ class RequisicaoRepository
         $stmt->execute([
             'escola_id'   => $data['escola_id'],
             'pdde_id'     => $data['pdde_id'],
-            'categoria_id'=> $data['categoria_id'], // pode ser null
+            'categoria_id'=> $data['categoria_id'],
             'produto'     => $data['produto'],
             'quantidade'  => $data['quantidade'],
+            'observacoes' => $data['obs']
         ]);
 
         return (string)$stmt->fetchColumn();
@@ -68,6 +69,7 @@ class RequisicaoRepository
         r.created_at,
         r.escola_id,
         r.pdde_id,
+        r.observacoes,
         p.nome AS pdde_nome,
         r.oferta_selecionada_id,
         c.nome AS categoria_nome

@@ -90,6 +90,11 @@ try {
         ?>
       </div>
     </div>
+
+      <div class="kv">
+          <div class="kv__label">Observações</div>
+          <div class="kv__value"><?= htmlspecialchars($req['observacoes'] ?? '-') ?></div>
+      </div>
   </div>
 </div>
 

@@ -20,8 +20,8 @@ class AutorizacoesService
 
     public function criarAutorizacao(string $requisicaoId, array $dados): void
     {
-    $supabaseUrl = getenv('SUPABASE_URL') ?: '';
-    $serviceRoleKey = getenv('SUPABASE_SERVICE_ROLE_KEY') ?: '';
+    $supabaseUrl = 'https://fkfkhzfcyuuwvwufhrrj.supabase.co';
+    $serviceRoleKey = 'sb_secret_3YMWMTq7PeZBcMw7e2J4YQ_hIuRvMu_';
 
 
         $pdfBytes = $this->criarPdfAutorizacao($requisicaoId, $dados);

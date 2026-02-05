@@ -15,6 +15,7 @@ $pddeId = trim((string)($_POST['pdde_id'] ?? ''));
 $categoriaId = (string)($_POST['categoria_id'] ?? '');
 $produto = (string)($_POST['produto'] ?? '');
 $quantidade = (int)($_POST['quantidade'] ?? 0);
+$obs = (string)($_POST['obs'] ?? '');
 
 
 try {
@@ -31,7 +32,16 @@ try {
 
     $service = new RequisicaoService($repo, $pddeRepo, $catRepo, $ofertaRepo);
 
-    $id = $service->criar($escolaId, $pddeId, $categoriaId, $produto, $quantidade);
+    $data = [
+        'escola_id' => $escolaId,
+        'pdde_id' => $pddeId,
+        'categoria_id' => $categoriaId,
+        'produto' => $produto,
+        'quantidade' => $quantidade,
+        'obs' => $obs
+    ];
+
+    $id = $service->criar($data);
 
     $_SESSION['flash_success'] = 'Requisição criada com sucesso.';
     header('Location: /index.php?page=requisicoes');

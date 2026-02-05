@@ -134,7 +134,7 @@ public function iniciarCompraParaEscola(string $requisicaoId, string $escolaId):
 }
 
 
-public function concluirCompraParaEscola(string $requisicaoId, string $escolaId): void
+public function concluirCompraParaEscola(string $requisicaoId, string $escolaId)
 {
    $pdo = Database::getConnection();
 
@@ -142,8 +142,6 @@ public function concluirCompraParaEscola(string $requisicaoId, string $escolaId)
    $autService = new AutorizacoesService($autRepository);
 
     $dados = $this->repo->buscarParaConclusao($requisicaoId, $escolaId);
-
-    $autService->criarAutorizacao($requisicaoId, $dados);
 
     if (!$dados) {
         throw new \RuntimeException('Requisição não encontrada.');
@@ -179,7 +177,6 @@ public function concluirCompraParaEscola(string $requisicaoId, string $escolaId)
         $this->repo->marcarComoConcluida($requisicaoId);
 
         $autService->criarAutorizacao($requisicaoId, $dados);
-
 
         $pdo->commit();
     } catch (\Throwable $e) {
