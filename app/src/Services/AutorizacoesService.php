@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../Repositories/AutorizacoesRepository.php';
-require 'C:/Users/pedro/OneDrive/Área de Trabalho/pdde1/pdde2/app/libs/TCPDF-main/tcpdf.php';
+require_once __DIR__ . '/../../libs/TCPDF-main/tcpdf.php';
 
 const BUCKET = 'autorizacoes';
 
