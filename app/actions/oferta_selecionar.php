@@ -29,7 +29,7 @@ try {
 
     $service->selecionarOfertaParaEscola($requisicaoId, $ofertaId, $escolaId);
 
-    $_SESSION['flash_success'] = 'Oferta selecionada. Status atualizado para Em compra.';
+    $_SESSION['flash_success'] = 'Oferta selecionada.';
     header('Location: /index.php?page=requisicao_detalhe&id=' . urlencode($requisicaoId));
     exit;
 

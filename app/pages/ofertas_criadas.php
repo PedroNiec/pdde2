@@ -222,6 +222,7 @@ $ofertas = $service->ofertasPorFornecedor($fornecedorId);
           <tr>
             <th>Produto</th>
             <th>Categoria</th>
+            <th>Marca</th>
             <th class="col-num">Qtd</th>
             <th class="col-num">Valor unitário</th>
             <th class="col-num">Valor total</th>
@@ -234,6 +235,7 @@ $ofertas = $service->ofertasPorFornecedor($fornecedorId);
             <tr>
               <td><?= htmlspecialchars((string)($r['produto'] ?? '-')) ?></td>
               <td><?= htmlspecialchars((string)($r['categoria'] ?? '-')) ?></td>
+                <td><?= htmlspecialchars((string)($r['marca'] ?? '-')) ?></td>
               <td class="col-num"><?= (int)($r['quantidade'] ?? 0) ?></td>
 
               <td class="col-num">

@@ -96,18 +96,18 @@ class PddeRepository
             throw new \InvalidArgumentException('Valor inválido.');
         }
 
-        $stmt = $this->pdo->prepare("SELECT saldo_bloqueado FROM pddes WHERE id = :id FOR UPDATE");
+        $stmt = $this->pdo->prepare("SELECT saldo_disponivel FROM pddes WHERE id = :id FOR UPDATE");
         $stmt->execute(['id' => $pddeId]);
-        $saldoBloquedo = $stmt->fetchColumn();
+        $saldo= $stmt->fetchColumn();
 
-        if ($saldoBloquedo === false) {
+        if ($saldo === false) {
             throw new \RuntimeException('PDDE não encontrado.');
         }
 
 
         
 
-        $saldoDisponivel = (float)$saldoBloquedo;
+        $saldoDisponivel = (float)$saldo;
         if ($saldoDisponivel < $valor) {
             throw new \InvalidArgumentException('Saldo insuficiente no PDDE para concluir a compra.');
         }

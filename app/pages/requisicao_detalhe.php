@@ -105,7 +105,7 @@ $temOfertaSelecionada = !empty($req['oferta_selecionada_id']);
 
 <?php if ($isAberta && $temOfertaSelecionada): ?>
   <div class="action-bar">
-    <form method="POST" action="/index.php?action=requisicao_store" style="margin:0;">
+    <form method="POST" action="/index.php?action=requisicao_iniciar_compra" style="margin:0;">
       <input type="hidden" name="requisicao_id" value="<?= htmlspecialchars($req['id']) ?>">
       <button type="submit" class="btn-primary">
         Iniciar compra
