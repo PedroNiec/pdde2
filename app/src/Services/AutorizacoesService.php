@@ -14,8 +14,8 @@ class AutorizacoesService
 
     public function criarAutorizacao(string $requisicaoId, array $dados): void
     {
-    $supabaseUrl = 'https://fkfkhzfcyuuwvwufhrrj.supabase.co';
-    $serviceRoleKey = 'sb_secret_3YMWMTq7PeZBcMw7e2J4YQ_hIuRvMu_';
+    $supabaseUrl = '';
+    $serviceRoleKey = '';
 
 
         $pdfBytes = $this->criarPdfAutorizacao($requisicaoId, $dados);
