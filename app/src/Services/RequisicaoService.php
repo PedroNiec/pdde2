@@ -143,9 +143,6 @@ public function concluirCompraParaEscola(string $requisicaoId, string $escolaId)
 
     $dados = $this->repo->buscarParaConclusao($requisicaoId, $escolaId);
 
-    var_dump($dados);
-    exit;
-
     if (!$dados) {
         throw new \RuntimeException('Requisição não encontrada.');
     }
@@ -163,6 +160,8 @@ public function concluirCompraParaEscola(string $requisicaoId, string $escolaId)
     $total = $qtd * $valorUnit;
 
     $pddeId = (string)($dados['pdde_id'] ?? '');
+    $dados['valor_total_formatado'] = "R$" . str_replace('.', ',', sprintf("%.2f", $dados['valor_total']));
+
     if ($pddeId === '') {
         throw new \RuntimeException('PDDE inválido.');
     }
