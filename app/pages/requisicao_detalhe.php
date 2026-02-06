@@ -15,7 +15,6 @@ unset($_SESSION['flash_success']);
 $error = $_SESSION['flash_error'] ?? null;
 unset($_SESSION['flash_error']);
 
-
 $repo = new RequisicaoRepository($pdo);
 $pddeRepo = new PddeRepository($pdo);
 $catRepo = new CategoriaRepository($pdo);
@@ -34,68 +33,84 @@ try {
     echo '<a class="btn-secondary" href="/index.php?page=requisicoes">Voltar</a>';
     return;
 }
+
+/* ============================
+   DESCOBRE A MELHOR OFERTA
+   ============================ */
+$melhorOfertaId = '';
+
+if (!empty($ofertas)) {
+    $menor = null;
+
+    foreach ($ofertas as $o) {
+        $vt = (float)($o['valor_total'] ?? 0);
+
+        if ($menor === null || $vt < $menor) {
+            $menor = $vt;
+            $melhorOfertaId = (string)($o['id'] ?? '');
+        }
+    }
+}
 ?>
 
 <div class="page-header">
-  <div>
-    <h1 class="page-title">Detalhes da requisição</h1>
-    <div class="page-subtitle">ID: <?= htmlspecialchars($req['id']) ?></div>
-  </div>
-  <a href="/index.php?page=requisicoes" class="btn-secondary">Voltar</a>
+    <div>
+        <h1 class="page-title">Detalhes da requisição</h1>
+        <div class="page-subtitle">ID: <?= htmlspecialchars($req['id']) ?></div>
+    </div>
+    <a href="/index.php?page=requisicoes" class="btn-secondary">Voltar</a>
 </div>
 
 <?php if ($success): ?>
-  <div class="alert alert--success"><?= htmlspecialchars($success) ?></div>
+    <div class="alert alert--success"><?= htmlspecialchars($success) ?></div>
 <?php endif; ?>
 
 <?php if ($error): ?>
-  <div class="alert alert--error"><?= htmlspecialchars($error) ?></div>
+    <div class="alert alert--error"><?= htmlspecialchars($error) ?></div>
 <?php endif; ?>
 
-
-
 <div class="card">
-  <div class="kv-grid">
-    <div class="kv">
-      <div class="kv__label">Produto</div>
-      <div class="kv__value"><?= htmlspecialchars($req['produto'] ?? '-') ?></div>
-    </div>
+    <div class="kv-grid">
+        <div class="kv">
+            <div class="kv__label">Produto</div>
+            <div class="kv__value"><?= htmlspecialchars($req['produto'] ?? '-') ?></div>
+        </div>
 
-    <div class="kv">
-      <div class="kv__label">Quantidade</div>
-      <div class="kv__value"><?= (int)($req['quantidade'] ?? 0) ?></div>
-    </div>
+        <div class="kv">
+            <div class="kv__label">Quantidade</div>
+            <div class="kv__value"><?= (int)($req['quantidade'] ?? 0) ?></div>
+        </div>
 
-    <div class="kv">
-      <div class="kv__label">PDDE</div>
-      <div class="kv__value"><?= htmlspecialchars($req['pdde_nome'] ?? '-') ?></div>
-    </div>
+        <div class="kv">
+            <div class="kv__label">PDDE</div>
+            <div class="kv__value"><?= htmlspecialchars($req['pdde_nome'] ?? '-') ?></div>
+        </div>
 
-    <div class="kv">
-      <div class="kv__label">Categoria</div>
-      <div class="kv__value"><?= htmlspecialchars($req['categoria_nome'] ?? '-') ?></div>
-    </div>
+        <div class="kv">
+            <div class="kv__label">Categoria</div>
+            <div class="kv__value"><?= htmlspecialchars($req['categoria_nome'] ?? '-') ?></div>
+        </div>
 
-    <div class="kv">
-      <div class="kv__label">Status</div>
-      <div class="kv__value"><?= htmlspecialchars($req['status'] ?? '-') ?></div>
-    </div>
+        <div class="kv">
+            <div class="kv__label">Status</div>
+            <div class="kv__value"><?= htmlspecialchars($req['status'] ?? '-') ?></div>
+        </div>
 
-    <div class="kv">
-      <div class="kv__label">Criada em</div>
-      <div class="kv__value">
-        <?php
-          $dt = $req['created_at'] ?? null;
-          echo $dt ? date('d/m/Y H:i', strtotime((string)$dt)) : '-';
-        ?>
-      </div>
-    </div>
+        <div class="kv">
+            <div class="kv__label">Criada em</div>
+            <div class="kv__value">
+                <?php
+                $dt = $req['created_at'] ?? null;
+                echo $dt ? date('d/m/Y H:i', strtotime((string)$dt)) : '-';
+                ?>
+            </div>
+        </div>
 
-      <div class="kv">
-          <div class="kv__label">Observações</div>
-          <div class="kv__value"><?= htmlspecialchars($req['observacoes'] ?? '-') ?></div>
-      </div>
-  </div>
+        <div class="kv">
+            <div class="kv__label">Observações</div>
+            <div class="kv__value"><?= htmlspecialchars($req['observacoes'] ?? '-') ?></div>
+        </div>
+    </div>
 </div>
 
 <?php
@@ -104,97 +119,109 @@ $temOfertaSelecionada = !empty($req['oferta_selecionada_id']);
 ?>
 
 <?php if ($isAberta && $temOfertaSelecionada): ?>
-  <div class="action-bar">
-    <form method="POST" action="/index.php?action=requisicao_iniciar_compra" style="margin:0;">
-      <input type="hidden" name="requisicao_id" value="<?= htmlspecialchars($req['id']) ?>">
-      <button type="submit" class="btn-primary">
-        Iniciar compra
-      </button>
-    </form>
-  </div>
+    <div class="action-bar">
+        <form method="POST" action="/index.php?action=requisicao_iniciar_compra" style="margin:0;">
+            <input type="hidden" name="requisicao_id" value="<?= htmlspecialchars($req['id']) ?>">
+            <button type="submit" class="btn-primary">
+                Iniciar compra
+            </button>
+        </form>
+    </div>
 <?php endif; ?>
 
-<?php
-$isEmCompra = (($req['status'] ?? '') === 'em_compra');
-?>
+<?php $isEmCompra = (($req['status'] ?? '') === 'em_compra'); ?>
 
 <?php if ($isEmCompra): ?>
-  <div class="action-bar" style="margin: 12px 0 16px;">
-    <form method="POST" action="/index.php?action=requisicao_concluir_compra" style="margin:0;">
-      <input type="hidden" name="requisicao_id" value="<?= htmlspecialchars($req['id']) ?>">
-      <button type="submit" class="btn-primary">Concluir compra</button>
-    </form>
-  </div>
+    <div class="action-bar" style="margin: 12px 0 16px;">
+        <form method="POST" action="/index.php?action=requisicao_concluir_compra" style="margin:0;">
+            <input type="hidden" name="requisicao_id" value="<?= htmlspecialchars($req['id']) ?>">
+            <button type="submit" class="btn-primary">Concluir compra</button>
+        </form>
+    </div>
 <?php endif; ?>
-
-
 
 <h2 class="section-title">Ofertas</h2>
 
 <table class="table">
-  <thead>
+    <thead>
     <tr>
-      <th>Fornecedor</th>
-      <th class="col-num">Valor unitário</th>
-      <th class="col-val">Valor total</th>
-      <th class="col-date">Enviada em</th>
-      <th class="col-actions">Ação</th>
+        <th>Fornecedor</th>
+        <th class="col-num">Valor unitário</th>
+        <th class="col-val">Valor total</th>
+        <th class="col-date">Enviada em</th>
+        <th class="col-actions">Ação</th>
     </tr>
-  </thead>
-  <tbody>
+    </thead>
+
+    <tbody>
     <?php if (empty($ofertas)): ?>
-      <tr>
-        <td colspan="3" style="text-align:center; color:#666;">
-          Nenhuma oferta recebida ainda
-        </td>
-      </tr>
-    <?php else: ?>
-      <?php foreach ($ofertas as $o): ?>
         <tr>
-          <td><?= htmlspecialchars($o['fornecedor_nome'] ?? '-') ?></td>
-          <td class="col-num">
-            <?php
-              $v = (string)($o['valor_unitario'] ?? '0');
-              echo 'R$ ' . number_format((float)$v, 2, ',', '.');
-            ?>
-          </td>
-          <td class="col-val">
-            <?php
-              $v = (string)($o['valor_total'] ?? '0');
-              echo 'R$ ' . number_format((float)$v, 2, ',', '.');
-            ?>
-          </td>
-          <td class="col-date">
-            <?php
-              $odt = $o['created_at'] ?? null;
-              echo $odt ? date('d/m/Y H:i', strtotime((string)$odt)) : '-';
-            ?>
-          </td>
-          <td class="col-actions">
-  <?php
-    $selecionadaId = (string)($req['oferta_selecionada_id'] ?? '');
-    $thisId = (string)($o['id'] ?? '');
-    $isSelected = $selecionadaId !== '' && $selecionadaId === $thisId;
-    $isAberta = (($req['status'] ?? '') === 'aberta');
-  ?>
-
-  <?php if ($isSelected): ?>
-    <span class="badge badge--done">Selecionada</span>
-
-  <?php elseif ($isAberta): ?>
-    <form method="POST" action="/index.php?action=oferta_selecionar" style="margin:0;">
-      <input type="hidden" name="requisicao_id" value="<?= htmlspecialchars($req['id']) ?>">
-      <input type="hidden" name="oferta_id" value="<?= htmlspecialchars($thisId) ?>">
-      <button type="submit" class="btn-small">Selecionar</button>
-    </form>
-
-  <?php else: ?>
-    <span class="muted">-</span>
-  <?php endif; ?>
-</td>
-
+            <td colspan="5" style="text-align:center; color:#666;">
+                Nenhuma oferta recebida ainda
+            </td>
         </tr>
-      <?php endforeach; ?>
+
+    <?php else: ?>
+        <?php foreach ($ofertas as $o): ?>
+            <?php
+            $thisId = (string)($o['id'] ?? '');
+            $isBest = $melhorOfertaId !== '' && $thisId === $melhorOfertaId;
+            ?>
+
+            <tr class="<?= $isBest ? 'offer--best' : '' ?>">
+                <td><?= htmlspecialchars($o['fornecedor_nome'] ?? '-') ?></td>
+
+                <td class="col-num">
+                    <?php
+                    $v = (string)($o['valor_unitario'] ?? '0');
+                    echo 'R$ ' . number_format((float)$v, 2, ',', '.');
+                    ?>
+                </td>
+
+                <td class="col-val">
+                    <?php
+                    $v = (string)($o['valor_total'] ?? '0');
+                    echo 'R$ ' . number_format((float)$v, 2, ',', '.');
+                    ?>
+                </td>
+
+                <td class="col-date">
+                    <?php
+                    $odt = $o['created_at'] ?? null;
+                    echo $odt ? date('d/m/Y H:i', strtotime((string)$odt)) : '-';
+                    ?>
+                </td>
+
+                <td class="col-actions">
+                    <?php
+                    $selecionadaId = (string)($req['oferta_selecionada_id'] ?? '');
+                    $isSelected = $selecionadaId !== '' && $selecionadaId === $thisId;
+                    ?>
+
+                    <?php if ($isSelected): ?>
+                        <span class="badge badge--done">Selecionada</span>
+
+                    <?php elseif ($isAberta): ?>
+                        <form method="POST" action="/index.php?action=oferta_selecionar" style="margin:0;">
+                            <input type="hidden" name="requisicao_id" value="<?= htmlspecialchars($req['id']) ?>">
+                            <input type="hidden" name="oferta_id" value="<?= htmlspecialchars($thisId) ?>">
+                            <button type="submit" class="btn-small">Selecionar</button>
+                        </form>
+
+                    <?php else: ?>
+                        <span class="muted">-</span>
+                    <?php endif; ?>
+                </td>
+            </tr>
+
+        <?php endforeach; ?>
     <?php endif; ?>
-  </tbody>
+    </tbody>
 </table>
+
+<style>
+    .offer--best {
+        background: #E0FFFF;
+        box-shadow: inset 3px 0 0 #1E90FF;
+    }
+</style>
