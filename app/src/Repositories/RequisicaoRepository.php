@@ -195,9 +195,14 @@ public function buscarParaConclusao(string $requisicaoId, string $escolaId): ?ar
         r.quantidade,
         r.pdde_id,
         r.oferta_selecionada_id,
+        r.produto,
+        e.nome AS escola_nome,
+        f.nome AS fornecedor_nome,
         o.valor_unitario
       FROM requisicoes r
       JOIN ofertas o ON o.id = r.oferta_selecionada_id
+      JOIN escolas e ON e.id = r.escola_id
+      JOIN fornecedores f ON f.id = o.fornecedor_id
       WHERE r.id = :rid
         AND r.escola_id = :eid
       LIMIT 1

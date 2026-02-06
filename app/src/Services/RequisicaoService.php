@@ -143,6 +143,9 @@ public function concluirCompraParaEscola(string $requisicaoId, string $escolaId)
 
     $dados = $this->repo->buscarParaConclusao($requisicaoId, $escolaId);
 
+    var_dump($dados);
+    exit;
+
     if (!$dados) {
         throw new \RuntimeException('Requisição não encontrada.');
     }
