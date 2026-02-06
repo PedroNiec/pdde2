@@ -197,6 +197,7 @@ public function buscarParaConclusao(string $requisicaoId, string $escolaId): ?ar
         r.oferta_selecionada_id,
         r.produto,
         e.nome AS escola_nome,
+        e.id AS escola_id,
         f.nome AS fornecedor_nome,
         o.valor_unitario,
         o.valor_total

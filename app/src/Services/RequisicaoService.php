@@ -6,6 +6,8 @@ require_once __DIR__ . '/../Repositories/PddeRepository.php';
 require_once __DIR__ . '/../Repositories/OfertaRepository.php';
 require_once __DIR__ . '/../Repositories/AutorizacoesRepository.php';
 require_once __DIR__ . '/../Services/AutorizacoesService.php';
+require_once __DIR__ . '/../Services/MovimentacoesService.php';
+require_once __DIR__ . '/../Repositories/MovimentacoesRepository.php';
 
 
 class RequisicaoService
@@ -140,6 +142,8 @@ public function concluirCompraParaEscola(string $requisicaoId, string $escolaId)
 
    $autRepository = new AutorizacoesRepository($pdo);
    $autService = new AutorizacoesService($autRepository);
+   $movRepository = new MovimentacoesRepository($pdo);
+   $movService = new MovimentacoesService($movRepository);
 
     $dados = $this->repo->buscarParaConclusao($requisicaoId, $escolaId);
 
@@ -175,6 +179,8 @@ public function concluirCompraParaEscola(string $requisicaoId, string $escolaId)
     $pdo->beginTransaction();
     try {
         $this->pddeRepo->debitarDisponivelEAdicionarGasto($pddeId, $total);
+
+        $movService->criarMovimentacao($dados);
 
         $this->repo->marcarComoConcluida($requisicaoId);
 
