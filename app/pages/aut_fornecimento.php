@@ -21,7 +21,7 @@ unset($_SESSION['flash_error']);
 
 $repository = new AutorizacoesRepository($pdo);
 
-$autorizacoes = $repository->listarAutorizacoesPorOfertaVencedora();
+$autorizacoes = $repository->listarAutorizacoesPorOfertaVencedora($fornecedorId);
 
 
 ?>

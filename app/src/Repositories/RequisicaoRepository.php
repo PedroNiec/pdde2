@@ -198,7 +198,15 @@ public function buscarParaConclusao(string $requisicaoId, string $escolaId): ?ar
         r.produto,
         e.nome AS escola_nome,
         e.id AS escola_id,
+        e.endereco AS endereco_escola,
+        e.telefone AS telefone_escola,
+        e.responsavel AS responsavel_escola,
+        f.id AS fornecedor_id,
         f.nome AS fornecedor_nome,
+        f.cnpj_cpf AS cnpj_fornecedor,
+        f.endereco AS endereco_fornecedor,
+        f.telefone AS telefone_fornecedor,
+        f.responsavel AS responsavel_fornecedor,
         o.valor_unitario,
         o.valor_total
       FROM requisicoes r
