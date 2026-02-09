@@ -145,7 +145,7 @@ unset($_SESSION['flash_error']);
     </form>
 
     <div class="footer">
-      Sistema interno
+        <a href="/index.php?page=cadastro_fornecedor">Sou fornecedor e quero me cadastrar</a>
     </div>
   </div>
 

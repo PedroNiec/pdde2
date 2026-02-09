@@ -44,7 +44,7 @@ $allowedPages = [
   'login','home','logout',
   'requisicoes','requisicao_nova','requisicao_detalhe',
   'fornecedor_requisicoes','oferta_nova', 'pdde', 'pdde_editar',
-  'ofertas_criadas', 'aut_fornecimento', 'relatorios_escola'
+  'ofertas_criadas', 'aut_fornecimento', 'relatorios_escola', 'cadastro_fornecedor'
 ];
 
 if (!in_array($page, $allowedPages, true)) {
@@ -86,7 +86,6 @@ if ($isLogged) {
         exit('Acesso negado');
     }
 }
-
 $pageFile = __DIR__ . "/../app/pages/{$page}.php";
 ?>
 <!doctype html>
