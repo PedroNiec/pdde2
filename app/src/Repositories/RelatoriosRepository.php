@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 class RelatoriosRepository
 {
+    private $pdo;
+
     public function __construct($pdo)
     {
         $this->pdo = $pdo;
@@ -28,6 +30,20 @@ class RelatoriosRepository
             ':escola_id' => $escola_id
         ]);
 
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+     public function relatorioPorPdde(string $pddeId): ?array
+    {
+        $sql = "
+        SELECT *
+        FROM movimentacoes m
+        WHERE m.pdde_id = :pdde_id
+        ORDER BY m.created_at DESC
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['pdde_id' => $pddeId]);
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 

@@ -3,17 +3,30 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../src/Repositories/RelatoriosRepository.php';
 require_once __DIR__ . '/../src/Services/RelatoriosService.php';
+require_once __DIR__ . '/../src/Repositories/PddeRepository.php';
 
 $pdo = Database::getConnection();
 
 $relRepo = new RelatoriosRepository($pdo);
 $relService = new RelatoriosService($relRepo);
+$pddeRepo = new PddeRepository($pdo);
+
+
+$escolaId = (string)($_SESSION['escola_id'] ?? '');
+
+$pddes = $escolaId ? $pddeRepo->listarPorEscola($escolaId) : [];
 
 $escola_id = $_SESSION['escola_id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mes'])) {
     $mes = trim($_POST['mes']);
     $relService->relatorioMensalPorEscola($mes, $escola_id);
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pdde_id'])) {
+    $pddeId = trim($_POST['pdde_id']);
+    $relService->relatorioPorPdde($pddeId);
     exit;
 }
 
@@ -105,6 +118,20 @@ header('Content-Type: text/html; charset=UTF-8');
                 width: 100%;
             }
         }
+
+        .field select {
+            padding: 7px 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-width: 200px;
+            background: #fff;
+        }
+
+        .field select:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+
     </style>
 </head>
 
@@ -127,6 +154,35 @@ header('Content-Type: text/html; charset=UTF-8');
             </div>
         </div>
     </form>
+</div>
+
+<br><br>
+
+<div class="form-container">
+    <div class="form-title">Relatório por PDDE</div>
+
+<form method="POST" class="form">
+    <div class="form-row">
+        <div class="field">
+            <label for="pdde_id">PDDE</label>
+            <select id="pdde_id" name="pdde_id" required>
+                <option value="">Selecione...</option>
+                <?php foreach ($pddes as $p): ?>
+                    <option value="<?= htmlspecialchars($p['id']) ?>">
+                        <?= htmlspecialchars($p['nome']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">
+                Gerar relatório por PDDE
+            </button>
+        </div>
+    </div>
+</form>
+
 </div>
 
 </body>

@@ -133,10 +133,10 @@ $pageFile = __DIR__ . "/../app/pages/{$page}.php";
 
         <a class="sidebar__link <?= $page === 'requisicoes' ? 'is-active' : '' ?>"
            href="/index.php?page=requisicoes">Requisições</a>
-        <a class="sidebar__link <?= $page === 'pdde' ? 'is-active' : '' ?>"
-            href="/index.php?page=pdde">Pdde</a>
           <a class="sidebar__link <?= $page === 'relatorios_escola' ? 'is-active' : '' ?>"
              href="/index.php?page=relatorios_escola">Relatórios</a>
+             <a class="sidebar__link <?= $page === 'pdde' ? 'is-active' : '' ?>"
+            href="/index.php?page=pdde">Pdde</a>
       <?php endif; ?>
 
       <?php if ($role === 'fornecedor'): ?>

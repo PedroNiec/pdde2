@@ -155,4 +155,14 @@ class PddeRepository
         ]);
     }
 
+    public function buscarDadosPorID(string $pddeId): ?array
+    {
+        $sql = "SELECT * FROM pddes WHERE id = :id LIMIT 1";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['id' => $pddeId]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return $row ?: null;
+    }
+
 }
