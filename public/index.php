@@ -44,7 +44,8 @@ $allowedPages = [
   'login','home','logout',
   'requisicoes','requisicao_nova','requisicao_detalhe',
   'fornecedor_requisicoes','oferta_nova', 'pdde', 'pdde_editar',
-  'ofertas_criadas', 'aut_fornecimento', 'relatorios_escola', 'cadastro_fornecedor'
+  'ofertas_criadas', 'aut_fornecimento', 'relatorios_escola', 'cadastro_fornecedor',
+  'configuracoes'
 ];
 
 if (!in_array($page, $allowedPages, true)) {
@@ -137,6 +138,8 @@ $pageFile = __DIR__ . "/../app/pages/{$page}.php";
              href="/index.php?page=relatorios_escola">Relatórios</a>
              <a class="sidebar__link <?= $page === 'pdde' ? 'is-active' : '' ?>"
             href="/index.php?page=pdde">Pdde</a>
+        <a class="sidebar__link <?= $page === 'configuracoes' ? 'is-active' : '' ?>"
+            href="/index.php?page=configuracoes">Configurações</a>    
       <?php endif; ?>
 
       <?php if ($role === 'fornecedor'): ?>
@@ -146,6 +149,8 @@ $pageFile = __DIR__ . "/../app/pages/{$page}.php";
            href="/index.php?page=ofertas_criadas">Ofertas Criadas</a>
           <a class="sidebar__link <?= $page === 'aut_fornecimento' ? 'is-active' : '' ?>"
              href="/index.php?page=aut_fornecimento">Autorizações de fornecimento</a>
+        <a class="sidebar__link <?= $page === 'configuracoes' ? 'is-active' : '' ?>"
+            href="/index.php?page=configuracoes">Configurações</a>     
       <?php endif; ?>
     </nav>
 
