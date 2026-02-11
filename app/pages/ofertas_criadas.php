@@ -29,6 +29,24 @@ $service = new FornecedorService(
 );
 
 $ofertas = $service->ofertasPorFornecedor($fornecedorId);
+
+/**
+ * ===== Filtro padronizado (GET) =====
+ * q: busca geral (produto/categoria/marca)
+ */
+$q = trim((string)($_GET['q'] ?? ''));
+$qNorm = mb_strtolower($q);
+
+if ($qNorm !== '') {
+    $ofertas = array_values(array_filter($ofertas, function($r) use ($qNorm) {
+        $produto = mb_strtolower((string)($r['produto'] ?? ''));
+        $categoria = mb_strtolower((string)($r['categoria'] ?? ''));
+        $marca = mb_strtolower((string)($r['marca'] ?? ''));
+        return str_contains($produto, $qNorm)
+            || str_contains($categoria, $qNorm)
+            || str_contains($marca, $qNorm);
+    }));
+}
 ?>
 
 <style>
@@ -98,8 +116,7 @@ $ofertas = $service->ofertasPorFornecedor($fornecedorId);
 .ui .alert--error{
   background: var(--dangerBg);
   border-color: var(--dangerBd);
-  color: var(--danger-tx, #991b1b);
-  border-color: var(--dangerBd);
+  color: var(--dangerTx);
 }
 
 /* Card + Table */
@@ -183,8 +200,89 @@ $ofertas = $service->ofertasPorFornecedor($fornecedorId);
 .ui .empty__title{ margin-top: 10px; font-weight: 900; }
 .ui .empty__text{ margin-top: 6px; color: var(--muted); font-size: 13px; }
 
+/* ===== Filter bar (padrão) ===== */
+.ui .filter-bar{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap: wrap;
+  padding: 12px;
+  margin: 10px 0 14px;
+}
+
+.ui .filter-left{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.ui .filter-field{
+  display:flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ui .filter-label{
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--muted);
+}
+
+.ui .filter-input{
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  outline: none;
+  min-width: 280px;
+}
+
+.ui .filter-input:focus{
+  border-color: rgba(17,24,39,.35);
+  box-shadow: 0 0 0 3px rgba(17,24,39,.08);
+}
+
+.ui .btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(17,24,39,.12);
+  background: var(--primary);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 900;
+  font-size: 13px;
+  transition: transform .12s ease, background .12s ease;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ui .btn:hover{ background: var(--primaryHover); transform: translateY(-1px); }
+
+.ui .btn-ghost{
+  background: #fff;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.ui .btn-ghost:hover{
+  background: #fbfcfe;
+}
+
+.ui .filter-meta{
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
 @media (max-width: 900px){
   .ui .page-header{ align-items:flex-start; }
+  .ui .filter-input{ min-width: 220px; width: 100%; }
 }
 </style>
 
@@ -209,11 +307,40 @@ $ofertas = $service->ofertasPorFornecedor($fornecedorId);
     <div class="alert alert--error"><?= htmlspecialchars((string)$error) ?></div>
   <?php endif; ?>
 
+  <!-- FILTER BAR PADRÃO -->
+  <div class="card filter-bar">
+    <form method="GET" style="width:100%; display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+      <input type="hidden" name="page" value="ofertas_criadas">
+
+      <div class="filter-left">
+        <div class="filter-field">
+          <div class="filter-label">Buscar</div>
+          <input
+            class="filter-input"
+            type="text"
+            name="q"
+            value="<?= htmlspecialchars($q) ?>"
+            placeholder="Produto, categoria ou marca..."
+          >
+        </div>
+
+        <button class="btn" type="submit">Filtrar</button>
+        <a class="btn btn-ghost" href="/index.php?page=ofertas_criadas">Limpar</a>
+      </div>
+
+      <div class="filter-meta">
+        <?= $q !== '' ? 'Filtro ativo: “' . htmlspecialchars($q) . '”' : 'Sem filtros' ?>
+      </div>
+    </form>
+  </div>
+
   <?php if (empty($ofertas)): ?>
     <div class="empty">
       <div class="empty__icon">🏷️</div>
-      <div class="empty__title">Nenhuma oferta criada</div>
-      <div class="empty__text">Quando você enviar uma oferta, ela vai aparecer aqui.</div>
+      <div class="empty__title">Nenhuma oferta encontrada</div>
+      <div class="empty__text">
+        <?= $q !== '' ? 'Tente ajustar sua busca.' : 'Quando você enviar uma oferta, ela vai aparecer aqui.' ?>
+      </div>
     </div>
   <?php else: ?>
     <div class="card table-wrap">
@@ -235,7 +362,8 @@ $ofertas = $service->ofertasPorFornecedor($fornecedorId);
             <tr>
               <td><?= htmlspecialchars((string)($r['produto'] ?? '-')) ?></td>
               <td><?= htmlspecialchars((string)($r['categoria'] ?? '-')) ?></td>
-                <td><?= htmlspecialchars((string)($r['marca'] ?? '-')) ?></td>
+              <td><?= htmlspecialchars((string)($r['marca'] ?? '-')) ?></td>
+
               <td class="col-num"><?= (int)($r['quantidade'] ?? 0) ?></td>
 
               <td class="col-num">
@@ -249,9 +377,7 @@ $ofertas = $service->ofertasPorFornecedor($fornecedorId);
 
               <td class="col-num">
                 <span class="price">
-                  <?php
-                    echo 'R$ ' . number_format((float)$valorTotal, 2, ',', '.');
-                  ?>
+                  <?= 'R$ ' . number_format((float)$valorTotal, 2, ',', '.') ?>
                 </span>
               </td>
 

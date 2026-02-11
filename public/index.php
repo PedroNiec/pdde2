@@ -14,6 +14,7 @@ $allowedActions = [
         'requisicao_concluir_compra',
         'oferta_store',
         'oferta_selecionar',
+        'update_configuracoes'
 ];
 
 if ($action) {
@@ -122,8 +123,6 @@ $pageFile = __DIR__ . "/../app/pages/{$page}.php";
               </svg>
               <span class="sidebar__logo-text">PddeControla</span>
           </div>
-
-          <!-- resto do seu código... -->
       </nav>
 
 

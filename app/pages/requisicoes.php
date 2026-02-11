@@ -24,6 +24,35 @@ $service = new RequisicaoService($repo, $pdde, $caterogia, $oferta);
 
 $escolaId = (string)($_SESSION['escola_id'] ?? '');
 $requisicoes = $escolaId ? $service->listarPorEscola($escolaId) : [];
+
+/**
+ * ===== Filtro padronizado (GET) =====
+ * q: busca geral (produto/pdde)
+ * status: aberta | em_compra | concluida | (vazio => todos)
+ */
+$q = trim((string)($_GET['q'] ?? ''));
+$statusFilter = trim((string)($_GET['status'] ?? ''));
+
+$qNorm = mb_strtolower($q);
+$statusNorm = mb_strtolower($statusFilter);
+
+if ($qNorm !== '' || $statusNorm !== '') {
+    $requisicoes = array_values(array_filter($requisicoes, function($r) use ($qNorm, $statusNorm) {
+        if ($statusNorm !== '') {
+            $st = mb_strtolower((string)($r['status'] ?? ''));
+            if ($st !== $statusNorm) return false;
+        }
+
+        if ($qNorm !== '') {
+            $produto = mb_strtolower((string)($r['produto'] ?? ''));
+            $pddeNome = mb_strtolower((string)($r['pdde_nome'] ?? ''));
+            return str_contains($produto, $qNorm) || str_contains($pddeNome, $qNorm);
+        }
+
+        return true;
+    }));
+}
+
 ?>
 
 <style>
@@ -144,6 +173,12 @@ $requisicoes = $escolaId ? $service->listarPorEscola($escolaId) : [];
   background: var(--primaryHover);
   transform: translateY(-1px);
 }
+.ui .btn-ghost{
+  background: #fff;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.ui .btn-ghost:hover{ background:#fbfcfe; }
 
 /* Table in a card */
 .ui .card{
@@ -223,10 +258,62 @@ $requisicoes = $escolaId ? $service->listarPorEscola($escolaId) : [];
 .ui .empty__title{ margin-top: 10px; font-weight: 900; }
 .ui .empty__text{ margin-top: 6px; color: var(--muted); font-size: 13px; }
 
+/* ===== Filter bar (padrão) ===== */
+.ui .filter-bar{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap: wrap;
+  padding: 12px;
+  margin: 10px 0 14px;
+}
+.ui .filter-left{
+  display:flex;
+  gap:10px;
+  align-items:flex-end;
+  flex-wrap: wrap;
+  flex: 1;
+}
+.ui .filter-field{
+  display:flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ui .filter-label{
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--muted);
+}
+.ui .filter-input,
+.ui .filter-select{
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  outline: none;
+}
+.ui .filter-input{
+  min-width: 280px;
+}
+.ui .filter-input:focus,
+.ui .filter-select:focus{
+  border-color: rgba(17,24,39,.35);
+  box-shadow: 0 0 0 3px rgba(17,24,39,.08);
+}
+
+.ui .filter-meta{
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
 @media (max-width: 820px){
   .ui .col-date{ display:none; }
   .ui .col-actions{ text-align:left; }
   .ui .page-header{ align-items:flex-start; }
+  .ui .filter-input{ min-width: 220px; width: 100%; }
 }
 </style>
 
@@ -254,11 +341,55 @@ $requisicoes = $escolaId ? $service->listarPorEscola($escolaId) : [];
     <div class="alert alert--error"><?= htmlspecialchars((string)$error) ?></div>
   <?php endif; ?>
 
+  <!-- FILTER BAR PADRÃO -->
+  <div class="card filter-bar">
+    <form method="GET" style="width:100%; display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+      <input type="hidden" name="page" value="requisicoes">
+
+      <div class="filter-left">
+        <div class="filter-field">
+          <div class="filter-label">Buscar</div>
+          <input
+            class="filter-input"
+            type="text"
+            name="q"
+            value="<?= htmlspecialchars($q) ?>"
+            placeholder="Produto ou PDDE..."
+          >
+        </div>
+
+        <div class="filter-field">
+          <div class="filter-label">Status</div>
+          <select class="filter-select" name="status">
+            <option value="" <?= $statusFilter === '' ? 'selected' : '' ?>>Todos</option>
+            <option value="aberta" <?= $statusFilter === 'aberta' ? 'selected' : '' ?>>Aberta</option>
+            <option value="em_compra" <?= $statusFilter === 'em_compra' ? 'selected' : '' ?>>Em compra</option>
+            <option value="concluida" <?= $statusFilter === 'concluida' ? 'selected' : '' ?>>Concluída</option>
+          </select>
+        </div>
+
+        <button class="btn" type="submit">Filtrar</button>
+        <a class="btn btn-ghost" href="/index.php?page=requisicoes">Limpar</a>
+      </div>
+
+      <div class="filter-meta">
+        <?php
+          $parts = [];
+          if ($q !== '') $parts[] = 'Busca: “' . htmlspecialchars($q) . '”';
+          if ($statusFilter !== '') $parts[] = 'Status: ' . htmlspecialchars($statusFilter);
+          echo $parts ? 'Filtro ativo: ' . implode(' • ', $parts) : 'Sem filtros';
+        ?>
+      </div>
+    </form>
+  </div>
+
   <?php if (empty($requisicoes)): ?>
     <div class="empty">
       <div class="empty__icon">📦</div>
-      <div class="empty__title">Nenhuma requisição cadastrada</div>
-      <div class="empty__text">Crie uma nova requisição para começar.</div>
+      <div class="empty__title">Nenhuma requisição encontrada</div>
+      <div class="empty__text">
+        <?= ($q !== '' || $statusFilter !== '') ? 'Tente ajustar seus filtros.' : 'Crie uma nova requisição para começar.' ?>
+      </div>
     </div>
   <?php else: ?>
     <div class="card table-wrap">

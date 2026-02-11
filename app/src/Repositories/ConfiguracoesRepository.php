@@ -13,18 +13,60 @@ class ConfiguracoesRepository
 
     public function getUserData(int $userId): ?array
     {
-        $stmt = $this->pdo->prepare('SELECT * FROM users WHERE id = :id');
+        if($_SESSION['escola_id'] !== null){
+            $stmt = $this->pdo->prepare('SELECT * FROM users JOIN escolas ON users.escola_id = escolas.id WHERE users.id = :id');
+            $stmt->execute(['id' => $userId]);
+            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        }
+
+        $stmt = $this->pdo->prepare('SELECT * FROM users JOIN fornecedores ON users.fornecedor_id = fornecedores.id WHERE users.id = :id');
         $stmt->execute(['id' => $userId]);
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
-    public function updateUserData(int $userId, array $data): bool
+    public function updateEscolaData(array $data): bool
     {
-        $stmt = $this->pdo->prepare('UPDATE users SET name = :name, email = :email WHERE id = :id');
-        return $stmt->execute([
-            'id' => $userId,
-            'name' => $data['name'],
-            'email' => $data['email']
-        ]);
+
+        if($_SESSION['escola_id'] !== null){
+            $sql = "
+            UPDATE public.escolas SET
+                nome = :nome,
+                endereco = :endereco,
+                telefone = :telefone,
+                responsavel = :responsavel
+            WHERE id = :id
+            ";
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([
+                ':id' => $data['id'],
+                ':nome' => $data['nome'],
+                ':endereco' => $data['endereco'],
+                ':telefone' => $data['telefone'],
+                ':responsavel' => $data['responsavel'],
+            ]);
+
+            return true;
+        };
+
+            $sql = "
+            UPDATE public.fornecedores SET
+                nome = :nome,
+                endereco = :endereco,
+                telefone = :telefone,
+                responsavel = :responsavel
+            WHERE id = :id";
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([
+                ':id' => $data['id'],
+                ':nome' => $data['nome'],
+                ':endereco' => $data['endereco'],
+                ':telefone' => $data['telefone'],
+                ':responsavel' => $data['responsavel'],
+            ]);
+
+            return true;
     }
+
 }
