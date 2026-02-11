@@ -11,20 +11,27 @@ class OfertasService
 
     public function atualizarOfertas($ofertaVencedora, $ofertas)
     {
-        $this->atualizarOfertaVencedora($ofertaVencedora);
-        $this->atualizarOfertasPerdedoras($ofertas);
+        $this->handleOfertaVencedora($ofertaVencedora);
+        $this->atualizarOfertasPerdedoras($ofertas, $ofertaVencedora);
 
         // AQUI PODEMOS ENVIAR AS NOTIFICAÇÕES POSTERIORMENTE
     }
 
-    public function atualizarOfertaVencedora($ofertaVencedora)
+    public function handleOfertaVencedora($ofertaVencedora)
     {
-        //TODO IMPLEMENTAR UPDATE NA OFERTA VENCEDORA
+        $this->Repository->atualizarStatusOferta($ofertaVencedora, 'GANHA');
     }
 
-    public function atualizarOfertasPerdedoras($ofertas)
+    public function atualizarOfertasPerdedoras($ofertas, $ofertaVencedora)
     {
-        //TODO IMPLEMENTAR O UPDATE NAS OFERTAS DIFERENTES DA VENCEDORA
+        foreach ($ofertas as $oferta){
+            $id = $oferta['id'];
+
+            if ($id !== $ofertaVencedora){
+                $this->Repository->atualizarStatusOferta($id, 'PERDIDA');
+            }
+
+        }
     }
 
 }

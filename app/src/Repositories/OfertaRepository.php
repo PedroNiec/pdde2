@@ -122,4 +122,21 @@ public function buscarSelecionadaPorRequisicao(string $requisicaoId): ?array
 
         return $row ?: null;
     }
+
+    public function atualizarStatusOferta($ofertaId, $status)
+    {
+        $sql = "
+        UPDATE ofertas
+        SET
+            status = :status
+        WHERE id = :oferta_id
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        $stmt->execute([
+            'status' => $status,
+            'oferta_id' => $ofertaId,
+        ]);
+    }
 }
