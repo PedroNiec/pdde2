@@ -8,6 +8,7 @@ require_once __DIR__ . '/../Repositories/AutorizacoesRepository.php';
 require_once __DIR__ . '/../Services/AutorizacoesService.php';
 require_once __DIR__ . '/../Services/MovimentacoesService.php';
 require_once __DIR__ . '/../Repositories/MovimentacoesRepository.php';
+require_once __DIR__ . '/../Services/OfertasService.php';
 
 
 class RequisicaoService
@@ -144,8 +145,15 @@ public function concluirCompraParaEscola(string $requisicaoId, string $escolaId)
    $autService = new AutorizacoesService($autRepository);
    $movRepository = new MovimentacoesRepository($pdo);
    $movService = new MovimentacoesService($movRepository);
+   $ofertaService = new OfertasService($this->ofertaRepo);
 
     $dados = $this->repo->buscarParaConclusao($requisicaoId, $escolaId);
+
+    $ofertas = $this->ofertaRepo->buscarOfertasPorRequisicao($requisicaoId);
+
+    $ofertaVencedora = $dados['oferta_selecionada_id'];
+
+    $ofertaService->atualizarOfertas($ofertaVencedora, $ofertas);
 
     if (!$dados) {
         throw new \RuntimeException('Requisição não encontrada.');

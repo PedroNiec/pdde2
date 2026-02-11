@@ -105,6 +105,21 @@ public function buscarSelecionadaPorRequisicao(string $requisicaoId): ?array
       $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
       return $row ?: null;
-
   }
+
+    public function buscarOfertasPorRequisicao(string $requisicaoId)
+    {
+        $sql = "
+        SELECT
+          o.id
+        FROM ofertas o
+        WHERE requisicao_id = :rid
+      ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['rid' => $requisicaoId]);
+        $row = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $row ?: null;
+    }
 }
