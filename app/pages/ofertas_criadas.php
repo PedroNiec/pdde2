@@ -246,6 +246,38 @@ if ($qNorm !== '') {
   box-shadow: 0 0 0 3px rgba(17,24,39,.08);
 }
 
+.ui .col-status{
+  text-align: center;
+  width: 140px;
+  white-space: nowrap;
+}
+
+.ui .status-badge{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .02em;
+  border: 1px solid transparent;
+}
+
+/* variações */
+.ui .status--aberta{
+  background: #f8fafc;
+  color: #6991c9;
+  border-color: #e2e8f0;
+}
+
+
+.ui .status--concluida{
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #bbf7d0;
+}
+
 .ui .btn{
   display:inline-flex;
   align-items:center;
@@ -353,7 +385,7 @@ if ($qNorm !== '') {
             <th class="col-num">Qtd</th>
             <th class="col-num">Valor unitário</th>
             <th class="col-num">Valor total</th>
-            <th class="col-date">Criado em</th>
+            <th class="col-status">Status</th>
           </tr>
         </thead>
         <tbody>
@@ -381,12 +413,21 @@ if ($qNorm !== '') {
                 </span>
               </td>
 
-              <td class="col-date">
-                <?php
-                  $dt = $r['created_at'] ?? null;
-                  echo $dt ? date('d/m/Y H:i', strtotime((string)$dt)) : '-';
-                ?>
+              <?php
+                $status = (string)($r['status'] ?? '');
+                $map = [
+                  'PERDIDA' => ['label' => 'PERDIDA', 'class' => 'status-badge status--aberta'],
+                  'GANHA' => ['label' => 'GANHA', 'class' => 'status-badge status--concluida'],
+                ];
+                $info = $map[$status] ?? ['label' => $status ?: '-', 'class' => 'status-badge'];
+              ?>
+              <td class="col-status">
+                <span class="<?= $info['class'] ?>">
+                  <?= htmlspecialchars($info['label']) ?>
+                </span>
               </td>
+
+
             </tr>
           <?php endforeach; ?>
         </tbody>

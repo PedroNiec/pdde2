@@ -68,6 +68,7 @@ public function ofertasPorFornecedor(string $fornecedorId): array
         o.valor_unitario,
         o.created_at,
         o.marca,
+        o.status,
         r.produto,
         r.quantidade,
         c.nome AS categoria

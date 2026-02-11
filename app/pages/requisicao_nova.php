@@ -46,8 +46,8 @@ unset($_SESSION['flash_error']);
 
     <div class="field">
       <label for="categoria_id">Categoria</label>
-      <select id="categoria_id" name="categoria_id">
-        <option value="">(Opcional)</option>
+      <select id="categoria_id" name="categoria_id" required>
+        <option value="">---</option>
         <?php foreach ($categorias as $c): ?>
           <option value="<?= htmlspecialchars($c['id']) ?>">
             <?= htmlspecialchars($c['nome']) ?>
