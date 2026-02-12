@@ -6,9 +6,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit('Método não permitido');
 }
 
-error_log('POST: ' . print_r($_POST, true));
-var_dump($_POST);
-exit;
 $nome        = trim((string)($_POST['nome'] ?? ''));
 $cnpjCpf     = trim((string)($_POST['cnpj_cpf'] ?? ''));
 $endereco    = trim((string)($_POST['endereco'] ?? ''));
