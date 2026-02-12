@@ -14,7 +14,8 @@ $allowedActions = [
         'requisicao_concluir_compra',
         'oferta_store',
         'oferta_selecionar',
-        'update_configuracoes'
+        'update_configuracoes',
+        'fornecedor_public_store'
 ];
 
 if ($action) {
@@ -29,7 +30,7 @@ if ($action) {
     }
 
     $isLogged = !empty($_SESSION['user_id']);
-    if (!$isLogged && $action != 'login_action') {
+    if (!$isLogged && !in_array($action, ['login_action', 'fornecedor_public_store'], true)) {
         http_response_code(401);
         exit('Não autenticado');
     }
@@ -45,9 +46,11 @@ $allowedPages = [
   'login','home','logout',
   'requisicoes','requisicao_nova','requisicao_detalhe',
   'fornecedor_requisicoes','oferta_nova', 'pdde', 'pdde_editar',
-  'ofertas_criadas', 'aut_fornecimento', 'relatorios_escola', 'cadastro_fornecedor',
-  'configuracoes'
+  'ofertas_criadas', 'aut_fornecimento', 'relatorios_escola',
+  'configuracoes', 'cadastro_fornecedor'
 ];
+
+$publicPages = ['login', 'cadastro_fornecedor'];
 
 if (!in_array($page, $allowedPages, true)) {
     http_response_code(404);
@@ -58,7 +61,7 @@ $isLogged = !empty($_SESSION['user_id']);
 $role = (string)($_SESSION['role'] ?? '');
 
 // Gate simples: se não está logado, só deixa acessar login
-if (!$isLogged && $page !== 'login') {
+if (!$isLogged && !in_array($page, $publicPages, true)) {
     header('Location: /index.php?page=login');
     exit;
 }
