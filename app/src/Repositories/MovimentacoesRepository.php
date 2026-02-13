@@ -24,4 +24,20 @@ class MovimentacoesRepository
             'valor_total' => $dados['valor_total'],
         ]);
     }
+
+    public function totalPorEscola($escolaId)
+    {
+        $sql = "
+        SELECT
+          *
+        FROM movimentacoes
+        WHERE escola_id = :escola_id
+      ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['escola_id' => $escolaId]);
+        $row = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $row ?: null;
+    }
 }

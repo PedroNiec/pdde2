@@ -13,4 +13,11 @@ class MovimentacoesService
     {
         $this->repository->criarMovimentacao($dados);
     }
+
+    public function totalPorEscola($scolaId)
+    {
+        $movimentacoes = $this->repository->totalPorEscola($scolaId);
+
+        return $movimentacoes;
+    }
 }
