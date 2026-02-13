@@ -1,100 +1,65 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/../src/Repositories/FornecedorRepository.php';
+require_once __DIR__ . '/../src/Services/FornecedorService.php';
+require_once __DIR__ . '/../src/Validators/FornecedorValidator.php';
+require_once __DIR__ . '/../src/Repositories/RequisicaoRepository.php';
+require_once __DIR__ . '/../src/Repositories/OfertaRepository.php';
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     exit('Método não permitido');
 }
 
-$nome        = trim((string)($_POST['nome'] ?? ''));
-$cnpjCpf     = trim((string)($_POST['cnpj_cpf'] ?? ''));
-$endereco    = trim((string)($_POST['endereco'] ?? ''));
-$telefone    = trim((string)($_POST['telefone'] ?? ''));
-$responsavel = trim((string)($_POST['responsavel'] ?? ''));
-$emailRaw    = trim((string)($_POST['email'] ?? ''));
+$dados = $_POST;
+
+$validator = new \Validators\FornecedorValidator();
+$validator->dataValidator($dados);
+
+$nome        = trim((string)($dados['nome'] ?? ''));
+$cnpjCpf     = trim((string)($dados['cnpj_cpf'] ?? ''));
+$endereco    = trim((string)($dados['endereco'] ?? ''));
+$telefone    = trim((string)($dados['telefone'] ?? ''));
+$responsavel = trim((string)($dados['responsavel'] ?? ''));
+$emailRaw    = trim((string)($dados['email'] ?? ''));
 $email       = mb_strtolower($emailRaw);
-$senha       = (string)($_POST['senha'] ?? '');
-$categorias  = $_POST['categorias[]'] ?? [];
+$senha       = (string)($dados['senha'] ?? '');
+$categorias  = $dados['categorias'] ?? [];
 
 
-
-if ($nome === '' || $email === '' || $senha === '') {
-    http_response_code(422);
-    exit('Preencha nome, e-mail e senha.');
-}
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    http_response_code(422);
-    exit('E-mail inválido.');
-}
-if (strlen($senha) < 6) {
-    http_response_code(422);
-    exit('Senha deve ter pelo menos 6 caracteres.');
-}
-if (!is_array($categorias) || count($categorias) === 0) {
-    http_response_code(422);
-    exit('Selecione ao menos uma categoria.');
-}
+$uuidRegex = '/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i';
 
 $categorias = array_values(array_unique(array_filter(array_map(
-    fn($v) => filter_var($v, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]),
+    fn($v) => trim((string)$v),
     $categorias
-))));
-
-if (count($categorias) === 0) {
-    http_response_code(422);
-    exit('Categorias inválidas.');
-}
+), fn($v) => $v !== '' && preg_match($uuidRegex, $v))));
 
 $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
 
+$data = [
+    'nome' => $nome,
+    'cnpjCpf' => $cnpjCpf,
+    'endereco' => $endereco,
+    'telefone' => $telefone,
+    'responsavel' => $responsavel,
+    'email' => $email,
+    'senha' => $senhaHash,
+    'categorias' => $categorias
+];
+
 $pdo = Database::getConnection();
 
+
+$ofertaRespository = new OfertaRepository($pdo);
+$reqRespository = new RequisicaoRepository($pdo);
+$fornecedorRespository = new FornecedorRepository($pdo);
+
+$fornecedorService = new FornecedorService($fornecedorRespository, $reqRespository, $ofertaRespository);
+
 try {
-    $pdo->beginTransaction();
+    $fornecedorService->criarFornecedor($data);
 
-    $st = $pdo->prepare("
-    INSERT INTO fornecedores (nome, cnpj_cpf, endereco, telefone, responsavel)
-    VALUES (:nome, :cnpj_cpf, :endereco, :telefone, :responsavel)
-    RETURNING id
-  ");
-
-    $st->execute([
-        ':nome' => $nome,
-        ':cnpj_cpf' => ($cnpjCpf !== '' ? $cnpjCpf : null),
-        ':endereco' => ($endereco !== '' ? $endereco : null),
-        ':telefone' => ($telefone !== '' ? $telefone : null),
-        ':responsavel' => ($responsavel !== '' ? $responsavel : null),
-    ]);
-
-    $fornecedorId = (int)$st->fetchColumn();
-
-    $stLink = $pdo->prepare("
-    INSERT INTO fornecedor_categorias (fornecedor_id, categoria_id)
-    VALUES (:fornecedor_id, :categoria_id)
-  ");
-    foreach ($categorias as $catId) {
-        $stLink->execute([
-            ':fornecedor_id' => $fornecedorId,
-            ':categoria_id' => (int)$catId,
-        ]);
-    }
-
-    $stUser = $pdo->prepare("
-    INSERT INTO users (name, email, password_hash, role, active)
-    VALUES (:nome, :email, :password_hash, :fornecedor_id, 'fornecedor', TRUE)
-  ");
-
-    $stUser->execute([
-        ':nome' => $nome,
-        ':email' => $email,
-        ':password_hash' => $senhaHash,
-        ':fornecedor_id' => $fornecedorId,
-    ]);
-
-
-    $pdo->commit();
-
-    // pode mandar pra login ou mostrar msg de sucesso
     header('Location: /index.php?page=login');
     exit;
 

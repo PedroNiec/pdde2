@@ -56,4 +56,30 @@ class FornecedorService
     {
         return $this->ofertaRepo->ofertasPorFornecedor($fornecedorId);
     }
+
+    public function criarFornecedor($data)
+    {
+        $this->criarFornecedorBD($data);
+        $this->criarVinculoCategoria($data);
+        $this->criarUserFornecedor($data);
+    }
+
+    public function criarFornecedorBD($data)
+    {
+        $this->idFornecedor = $this->fornecedorRepo->criarFornecedorBD($data);
+
+        if (!$this->idFornecedor) {
+            throw new InvalidArgumentException('Fornecedor não criado.');
+        }
+    }
+
+    public function criarVinculoCategoria($data)
+    {
+        $this->fornecedorRepo->criarVinculoCategoria($data, $this->idFornecedor);
+    }
+
+    public function criarUserFornecedor($data)
+    {
+        $this->fornecedorRepo->criarUserFornecedor($data, $this->idFornecedor);
+    }
 }

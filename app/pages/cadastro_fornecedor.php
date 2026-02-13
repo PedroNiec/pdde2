@@ -14,7 +14,7 @@ $flashOk    = $_GET['ok'] ?? '';
 <!doctype html>
 <html lang="pt-br">
 <head>
-    <meta charset="utf-8">UTF-8
+    <meta charset="utf-8">
     <style>
         /* Cadastro público (cadastro_fornecedor) */
         .public-wrap{
