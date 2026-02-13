@@ -3,11 +3,18 @@ declare(strict_types=1);
 
 require __DIR__ . '/../../app/core/bootstrap.php';
 require_once __DIR__ . '/../src/Repositories/PddeRepository.php';
+require_once __DIR__ . '/../src/Repositories/RequisicaoRepository.php';
+require_once __DIR__ . '/../src/Repositories/CategoriaRepository.php';
+require_once __DIR__ . '/../src/Repositories/OfertaRepository.php';
 require_once __DIR__ . '/../src/Services/RequisicaoService.php';
 
 $pdo = Database::getConnection();
 $pddeRepo = new PddeRepository($pdo);
-$reqService = new RequisicaoService();
+$reqRepo = new RequisicaoRepository($pdo);
+$catRepo = new CategoriaRepository($pdo);
+$ofertaRepo = new OfertaRepository($pdo);
+
+$reqService = new RequisicaoService($reqRepo, $pddeRepo, $catRepo, $ofertaRepo);
 
 if (empty($_SESSION['user_id'])) {
     header('Location: /index.php?page=login');
@@ -22,6 +29,11 @@ $userRole = $_SESSION['role'] ?? 'user';
 
 
 $pddes = $pddeRepo->listarPorEscola($_SESSION['escola_id']);
+$requisicoes = $reqService->listarPorEscola($_SESSION['escola_id']);
+
+var_dump($requisicoes);
+exit;
+
 
 
 ?>
