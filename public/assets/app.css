@@ -48,6 +48,23 @@ body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI
   border-top: 1px solid #e5e5e5;
 }
 
+.btn_sair{
+   display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    background: #c52626;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 900;
+    font-size: 13px;
+    transition: transform .12s ease, background .12s ease;
+    white-space: nowrap;
+}
+.btn_sair:hover{ background: #d14343; transform: translateY(-1px); }
+
 .sidebar__user { font-size: 14px; color: #444; padding: 0 6px; }
 
 .main {

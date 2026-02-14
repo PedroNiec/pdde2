@@ -7,6 +7,7 @@ require_once __DIR__ . '/../Repositories/OfertaRepository.php';
 
 class FornecedorService
 {
+    public $idFornecedor;
     public function __construct(
         private FornecedorRepository $fornecedorRepo,
         private RequisicaoRepository $requisicaoRepo,

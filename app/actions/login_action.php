@@ -56,7 +56,7 @@ if ($_SESSION['role'] === 'escola') {
         header('Location: /index.php?page=login');
         exit;
     }
-    header('Location: /index.php?page=requisicoes');
+    header('Location: /index.php?page=home');
     exit;
 }
 

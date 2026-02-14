@@ -161,7 +161,7 @@ $pageFile = __DIR__ . "/../app/pages/{$page}.php";
         <?= htmlspecialchars($_SESSION['name'] ?? 'Usuário') ?>
       </div>
 
-      <a class="sidebar__link" href="/index.php?page=logout">Sair</a>
+      <a class="btn_sair" href="/index.php?page=logout">Sair</a>
     </div>
   </aside>
 

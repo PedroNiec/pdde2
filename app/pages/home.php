@@ -57,6 +57,39 @@ foreach ($pddes as $p) {
 function brl(float $v): string {
     return 'R$ ' . number_format($v, 2, ',', '.');
 }
+
+// ===== Card 2: Requisições (contadores + últimas) =====
+$reqTotal = count($requisicoes);
+$reqAbertas = 0;
+$reqEmCompra = 0;
+$reqConcluidas = 0;
+
+foreach ($requisicoes as $r) {
+    $st = (string)($r['status'] ?? '');
+    if ($st === 'aberta') $reqAbertas++;
+    elseif ($st === 'em_compra') $reqEmCompra++;
+    elseif ($st === 'concluida') $reqConcluidas++;
+}
+
+// ordena por created_at desc pra mostrar últimas
+usort($requisicoes, function($a, $b) {
+    return strtotime((string)($b['created_at'] ?? '')) <=> strtotime((string)($a['created_at'] ?? ''));
+});
+$ultimasReq = array_slice($requisicoes, 0, 5);
+
+// ===== Card 3: Movimentações (totais + últimas) =====
+$movTotal = 0.0;
+foreach ($movimentacoes as $m) {
+    $movTotal += (float)($m['valor_total'] ?? 0);
+}
+
+// ordena por created_at desc
+usort($movimentacoes, function($a, $b) {
+    return strtotime((string)($b['created_at'] ?? '')) <=> strtotime((string)($a['created_at'] ?? ''));
+});
+$ultimasMov = array_slice($movimentacoes, 0, 5);
+
+
 ?>
 
 <!doctype html>
@@ -133,6 +166,20 @@ function brl(float $v): string {
             align-items:center;
             flex-wrap: wrap;
         }
+
+        .money{
+            display:inline-flex;
+            align-items:center;
+            justify-content:flex-end;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: #fbfcfe;
+            font-weight: 1000;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
 
         .chip{
             display:inline-flex;
@@ -237,6 +284,84 @@ function brl(float $v): string {
         @media (max-width: 900px){
             .kpis{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
+
+        .grid-2{
+            display:grid;
+            grid-template-columns: 1.2fr .8fr;
+            gap: 12px;
+            padding: 14px 16px 16px;
+            }
+
+            .mini{
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow:hidden;
+            background: #fff;
+            }
+
+            .mini__head{
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 900;
+            font-size: 12px;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            background: #fbfcfe;
+            }
+
+            .mini__row{
+            display:flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+            }
+            .mini__row:last-child{ border-bottom: none; }
+
+            .mini__left{
+            display:flex;
+            flex-direction: column;
+            gap: 3px;
+            }
+            .mini__title{ font-weight: 900; }
+            .mini__meta{ color: var(--muted); font-size: 13px; }
+
+            .pill{
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: #fff;
+            font-weight: 900;
+            font-size: 12px;
+            white-space: nowrap;
+            }
+
+            .pill--open{ background:#f8fafc; border-color:#e2e8f0; color:#334155; }
+            .pill--buy{ background:#eff6ff; border-color:#bfdbfe; color:#1d4ed8; }
+            .pill--done{ background:#ecfdf5; border-color:#bbf7d0; color:#047857; }
+
+            .card-actions{
+            padding: 0 16px 16px;
+            display:flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            }
+            .btn-ghost{
+            background: #fff;
+            color: var(--text);
+            border: 1px solid var(--border);
+            }
+            .btn-ghost:hover{ background:#fbfcfe; }
+
+            @media (max-width: 900px){
+            .grid-2{ grid-template-columns: 1fr; }
+            }
+
     </style>
 </head>
 
@@ -253,7 +378,6 @@ function brl(float $v): string {
             </div>
         </div>
 
-        <a class="btn" href="/index.php?page=logout">Sair</a>
     </div>
 
     <!-- CARD 1: PDDE (Visão geral) -->
@@ -289,6 +413,148 @@ function brl(float $v): string {
                 <div class="kpi__label">Saldo inicial</div>
                 <div class="kpi__value"><?= brl($totInicial) ?></div>
             </div>
+        </div>
+    </div>
+
+    <!-- CARD 2: Requisições (pendências + últimas) -->
+    <div class="card" style="margin-top: 12px;">
+        <div class="card__head">
+            <div>
+            <h2 class="card__title">Requisições — Painel</h2>
+            <div class="card__desc">
+                <?= $reqTotal ?> registr<?= $reqTotal === 1 ? 'o' : 'os' ?> no total
+            </div>
+            </div>
+
+            <a class="btn" href="/index.php?page=requisicoes">Ver requisições</a>
+        </div>
+
+        <div class="grid-2">
+            <!-- Contadores -->
+            <div class="kpis" style="padding:0; grid-template-columns: repeat(3, minmax(0, 1fr));">
+            <div class="kpi kpi--neutral">
+                <div class="kpi__label">Abertas</div>
+                <div class="kpi__value"><?= (int)$reqAbertas ?></div>
+            </div>
+
+            <div class="kpi kpi--info">
+                <div class="kpi__label">Em compra</div>
+                <div class="kpi__value"><?= (int)$reqEmCompra ?></div>
+            </div>
+
+            <div class="kpi kpi--success">
+                <div class="kpi__label">Concluídas</div>
+                <div class="kpi__value"><?= (int)$reqConcluidas ?></div>
+            </div>
+            </div>
+
+            <!-- Últimas -->
+            <div class="mini">
+            <div class="mini__head">Últimas criadas</div>
+
+            <?php if (empty($ultimasReq)): ?>
+                <div class="mini__row">
+                <div class="mini__left">
+                    <div class="mini__title">Nenhuma requisição</div>
+                    <div class="mini__meta">Crie sua primeira requisição para começar.</div>
+                </div>
+                </div>
+            <?php else: ?>
+                <?php foreach ($ultimasReq as $r): ?>
+                <?php
+                    $st = (string)($r['status'] ?? '');
+                    $pill = 'pill';
+                    $label = $st ?: '-';
+
+                    if ($st === 'aberta') { $pill .= ' pill--open'; $label = 'Aberta'; }
+                    elseif ($st === 'em_compra') { $pill .= ' pill--buy'; $label = 'Em compra'; }
+                    elseif ($st === 'concluida') { $pill .= ' pill--done'; $label = 'Concluída'; }
+
+                    $dt = $r['created_at'] ?? null;
+                    $dtFmt = $dt ? date('d/m/Y H:i', strtotime((string)$dt)) : '-';
+                ?>
+                <div class="mini__row">
+                    <div class="mini__left">
+                    <div class="mini__title"><?= htmlspecialchars((string)($r['produto'] ?? '-')) ?></div>
+                    <div class="mini__meta">
+                        Qtd: <?= (int)($r['quantidade'] ?? 0) ?> • <?= htmlspecialchars((string)($r['pdde_nome'] ?? '-')) ?> • <?= $dtFmt ?>
+                    </div>
+                    </div>
+
+                    <span class="<?= $pill ?>"><?= htmlspecialchars($label) ?></span>
+                </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+            </div>
+        </div>
+
+            <div class="card-actions">
+                <a class="btn" href="/index.php?page=requisicao_nova">Nova requisição</a>
+                <a class="btn btn-ghost" href="/index.php?page=requisicoes&status=aberta">Ver abertas</a>
+                <a class="btn btn-ghost" href="/index.php?page=requisicoes&status=em_compra">Ver em compra</a>
+            </div>
+    </div>
+
+        <!-- CARD 3: Movimentações -->
+    <div class="card" style="margin-top: 12px;">
+        <div class="card__head">
+            <div>
+            <h2 class="card__title">Movimentações — Resumo</h2>
+            <div class="card__desc">Últimas movimentações registradas na escola</div>
+            </div>
+
+            <!-- se não existir página de movimentações ainda, aponta para PDDE ou Requisições -->
+            <a class="btn" href="/index.php?page=relatorios_escola">Extrair relatórios</a>
+        </div>
+
+        <div class="grid-2">
+            <!-- KPIs -->
+            <div class="kpis" style="padding:0; grid-template-columns: repeat(2, minmax(0, 1fr));">
+            <div class="kpi kpi--warn">
+                <div class="kpi__label">Total movimentado</div>
+                <div class="kpi__value"><?= brl($movTotal) ?></div>
+            </div>
+
+            <div class="kpi kpi--neutral">
+                <div class="kpi__label">Qtd. movimentações</div>
+                <div class="kpi__value"><?= (int)count($movimentacoes) ?></div>
+            </div>
+            </div>
+
+            <!-- Últimas -->
+            <div class="mini">
+            <div class="mini__head">Últimas movimentações</div>
+
+            <?php if (empty($ultimasMov)): ?>
+                <div class="mini__row">
+                <div class="mini__left">
+                    <div class="mini__title">Nenhuma movimentação</div>
+                    <div class="mini__meta">Quando houver compras/conclusões, elas aparecem aqui.</div>
+                </div>
+                </div>
+            <?php else: ?>
+                <?php foreach ($ultimasMov as $m): ?>
+                <?php
+                    $dt = $m['created_at'] ?? null;
+                    $dtFmt = $dt ? date('d/m/Y H:i', strtotime((string)$dt)) : '-';
+                    $produto = (string)($m['produto'] ?? '-');
+                    $valor = (float)($m['valor_total'] ?? 0);
+                ?>
+                <div class="mini__row">
+                    <div class="mini__left">
+                    <div class="mini__title"><?= htmlspecialchars($produto) ?></div>
+                    <div class="mini__meta"><?= $dtFmt ?></div>
+                    </div>
+                    <span class="money"><?= brl($valor) ?></span>
+                </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+            </div>
+        </div>
+
+        <div class="card-actions">
+            <a class="btn btn-ghost" href="/index.php?page=requisicoes&status=concluida">Ver requisições concluídas</a>
+            <a class="btn btn-ghost" href="/index.php?page=pdde">Gerenciar PDDES</a>
         </div>
     </div>
 

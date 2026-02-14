@@ -74,16 +74,17 @@ public function ofertasPorFornecedor(string $fornecedorId): array
         c.nome AS categoria
       FROM ofertas o
       INNER JOIN requisicoes r ON r.id = o.requisicao_id
-      LEFT JOIN fornecedor_categorias fc ON fc.fornecedor_id = o.fornecedor_id
-      LEFT JOIN categorias c ON c.id = fc.categoria_id
-      WHERE o.fornecedor_id = :fid 
+      LEFT JOIN categorias c ON c.id = r.categoria_id
+      WHERE o.fornecedor_id = :fid
       ORDER BY o.created_at DESC
     ";
 
     $stmt = $this->pdo->prepare($sql);
     $stmt->execute(['fid' => $fornecedorId]);
+
     return $stmt->fetchAll(\PDO::FETCH_ASSOC);
 }
+
 
 public function buscarSelecionadaPorRequisicao(string $requisicaoId): ?array
   {
